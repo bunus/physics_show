@@ -1,0 +1,1699 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#070a11">
+<meta name="description" content="动量守恒定律：冲量与动量定理、碰撞、反冲与火箭、人船模型的动态演示。">
+<title>动量守恒定律 · 动态教学实验室</title>
+<style>
+/* ============================================================
+   高中物理 · Physics Lab
+   ============================================================ */
+:root{
+  --bg:#060a12;
+  --text:#eef7f6;
+  --text-soft:#c3d5dc;
+  --muted:#8ba1ac;
+  --muted-2:#6f858f;
+  --line:rgba(165,200,220,.11);
+  --line-strong:rgba(165,200,220,.2);
+  --accent:#5eead4;
+  --accent-rgb:94,234,212;
+  --sans:"PingFang SC","Microsoft YaHei","Noto Sans SC","Source Han Sans SC",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --serif:"Cambria Math","STIX Two Math","Latin Modern Math","Times New Roman","Songti SC",serif;
+  --mono:"Cascadia Code","SFMono-Regular","JetBrains Mono",Consolas,monospace;
+  --radius:18px;
+  --shadow:0 24px 60px rgba(0,0,0,.3);
+}
+*{box-sizing:border-box}
+html,body{height:100%;margin:0}
+button:focus-visible,a:focus-visible,input:focus-visible{outline:2px solid rgba(var(--accent-rgb),.85);outline-offset:2px}
+body{
+  background:var(--bg);color:var(--text);font-family:var(--sans);
+  overflow:hidden;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;
+}
+button{font:inherit;color:inherit}
+::selection{background:rgba(var(--accent-rgb),.24);color:#fff}
+[hidden]{display:none!important}
+
+/* ---------- atmosphere ---------- */
+.ambient{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden;background:
+  radial-gradient(ellipse 70% 60% at 50% -12%,rgba(43,92,122,.2),transparent 64%),
+  linear-gradient(180deg,#08101c 0%,#05090f 100%);}
+.ambient::after{
+  content:"";position:absolute;inset:0;
+  background-image:
+    linear-gradient(rgba(180,215,235,.028) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(180,215,235,.028) 1px,transparent 1px);
+  background-size:70px 70px;
+  -webkit-mask-image:radial-gradient(ellipse 78% 68% at 46% 34%,#000 8%,transparent 78%);
+  mask-image:radial-gradient(ellipse 78% 68% at 46% 34%,#000 8%,transparent 78%);
+}
+.glow{position:absolute;border-radius:50%;filter:blur(90px);pointer-events:none}
+.glow-a{width:540px;height:540px;left:-140px;top:-220px;background:rgba(var(--accent-rgb),.1)}
+.glow-b{width:640px;height:640px;right:-220px;bottom:-300px;background:rgba(104,86,210,.08)}
+
+/* ---------- app ---------- */
+.app{position:relative;z-index:1;height:100vh;height:100dvh;min-height:660px;display:flex;flex-direction:column}
+
+/* ---------- topbar ---------- */
+.topbar{flex:0 0 74px;display:flex;align-items:center;justify-content:space-between;gap:18px;padding:0 20px}
+.brand{display:flex;align-items:center;gap:12px;min-width:0}
+.brand-mark{
+  width:42px;height:42px;border-radius:12px;flex:none;display:grid;place-items:center;
+  border:1px solid rgba(var(--accent-rgb),.3);
+  background:linear-gradient(140deg,rgba(var(--accent-rgb),.18),rgba(var(--accent-rgb),.02));
+  box-shadow:0 0 28px rgba(var(--accent-rgb),.14),inset 0 0 18px rgba(var(--accent-rgb),.05);
+  transition:border-color .4s,box-shadow .4s;
+}
+.brand-mark svg{width:30px;height:30px;display:block}
+.brand-copy{min-width:0}
+.eyebrow{display:flex;align-items:center;gap:7px;font-size:8px;letter-spacing:.2em;color:var(--muted);text-transform:uppercase;white-space:nowrap}
+.eyebrow i{width:13px;height:1px;background:rgba(255,255,255,.18);flex:none}
+.brand h1{margin:3px 0 0;font-size:15px;font-weight:600;letter-spacing:.06em;white-space:nowrap}
+.title-en{font-size:.64em;color:var(--muted);font-weight:400;letter-spacing:.14em}
+.top-actions{display:flex;align-items:center;gap:8px;flex:none}
+.status-chip{
+  display:flex;align-items:center;gap:7px;padding:7px 11px;border-radius:999px;
+  border:1px solid var(--line);background:rgba(255,255,255,.03);
+  font-size:10px;color:var(--text-soft);white-space:nowrap;letter-spacing:.04em;
+}
+.chip-dot{width:5px;height:5px;border-radius:50%;background:var(--accent);box-shadow:0 0 9px var(--accent);flex:none}
+.ghost-btn,.icon-btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:6px;
+  border:1px solid var(--line);background:rgba(255,255,255,.025);color:var(--text-soft);
+  border-radius:10px;padding:8px 12px;font-size:11px;cursor:pointer;
+  transition:background .18s,border-color .18s,color .18s,transform .18s;white-space:nowrap;
+}
+.ghost-btn:hover,.icon-btn:hover{background:rgba(255,255,255,.06);border-color:var(--line-strong);color:#fff}
+.ghost-btn:active,.icon-btn:active{transform:translateY(1px)}
+.ghost-btn svg{width:14px;height:14px}
+.icon-btn{width:36px;height:36px;padding:0}
+.icon-btn svg{width:16px;height:16px}
+
+/* ---------- workspace ---------- */
+.workspace{
+  flex:1;min-height:0;display:grid;gap:11px;padding:0 16px 15px;
+  grid-template-columns:minmax(248px,276px) minmax(0,1fr) minmax(298px,326px);
+  grid-template-rows:minmax(0,1fr) 146px;
+  grid-template-areas:"controls stage details" "catalog catalog catalog";
+}
+.panel,.stage-card,.catalog{
+  border:1px solid var(--line);
+  background:linear-gradient(180deg,rgba(16,27,45,.9),rgba(8,15,27,.93));
+  box-shadow:var(--shadow),inset 0 1px 0 rgba(255,255,255,.04);
+  backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);
+}
+.panel{min-height:0;border-radius:var(--radius);overflow-y:auto;scrollbar-width:thin;scrollbar-color:rgba(255,255,255,.12) transparent}
+.panel::-webkit-scrollbar{width:5px}
+.panel::-webkit-scrollbar-thumb{background:rgba(255,255,255,.12);border-radius:99px}
+.panel-controls{grid-area:controls;padding:15px 14px 14px;display:flex;flex-direction:column;gap:11px}
+.panel-details{grid-area:details;padding:15px 14px 14px;display:flex;flex-direction:column;gap:10px}
+.panel-controls>*,.panel-details>*{flex:0 0 auto}
+.panel-head{display:flex;align-items:flex-start;gap:9px;min-width:0}
+.section-num{
+  font-family:var(--mono);font-size:9.5px;letter-spacing:.04em;color:var(--accent);
+  border:1px solid rgba(var(--accent-rgb),.25);background:rgba(var(--accent-rgb),.07);
+  border-radius:7px;padding:4px 6px;line-height:1;margin-top:2px;flex:none;
+}
+.panel-head h2{margin:0;font-size:14.5px;font-weight:600;letter-spacing:.04em;line-height:1.35}
+.panel-head p{margin:2px 0 0;font-size:9.5px;color:var(--muted);letter-spacing:.03em}
+
+/* ---------- chapter nav ---------- */
+.chapter-list{display:flex;flex-direction:column;gap:2px}
+.chapter-item{
+  display:flex;align-items:center;gap:9px;min-width:0;padding:7px 9px;border-radius:9px;
+  border:1px solid transparent;background:transparent;color:var(--muted);
+  cursor:pointer;text-align:left;transition:background .16s,color .16s,border-color .16s;
+}
+.chapter-item:hover{background:rgba(255,255,255,.045);color:var(--text-soft)}
+.chapter-item.on{color:var(--tc);background:rgba(var(--tc-rgb),.09);border-color:rgba(var(--tc-rgb),.22)}
+.ci-num{font-family:var(--mono);font-size:9px;opacity:.65;width:17px;flex:none}
+.ci-name{font-size:12px;letter-spacing:.02em;white-space:nowrap;min-width:0;overflow:hidden;text-overflow:ellipsis}
+.ci-en{margin-left:auto;font-size:7px;letter-spacing:.13em;opacity:.4;white-space:nowrap}
+.chapter-item.on .ci-en{opacity:.65}
+
+.block-label{
+  display:flex;align-items:baseline;justify-content:space-between;gap:8px;
+  padding-top:10px;border-top:1px solid var(--line);
+  font-size:8.5px;letter-spacing:.13em;color:var(--muted);text-transform:uppercase;
+}
+.block-label span:last-child{font-size:8px;letter-spacing:.04em;color:var(--muted-2);text-transform:none}
+
+/* ---------- controls ---------- */
+.controls{display:flex;flex-direction:column;gap:9px}
+.ctrl{display:flex;flex-direction:column;gap:6px}
+.ctrl-top{display:flex;align-items:baseline;justify-content:space-between;gap:10px;font-size:10.5px;color:var(--muted);letter-spacing:.02em}
+.ctrl-top b{font-family:var(--mono);font-size:10.5px;font-weight:500;color:var(--accent)}
+input[type=range]{
+  -webkit-appearance:none;appearance:none;width:100%;height:3px;border-radius:99px;margin:5px 0;
+  background:linear-gradient(90deg,rgba(var(--accent-rgb),.72),rgba(var(--accent-rgb),.12));
+  outline:none;cursor:pointer;
+}
+input[type=range]::-webkit-slider-thumb{
+  -webkit-appearance:none;width:13px;height:13px;border-radius:50%;
+  background:#0b1220;border:2px solid var(--accent);cursor:grab;
+  box-shadow:0 0 12px rgba(var(--accent-rgb),.55);
+}
+input[type=range]::-moz-range-thumb{
+  width:11px;height:11px;border-radius:50%;background:#0b1220;border:2px solid var(--accent);
+  box-shadow:0 0 12px rgba(var(--accent-rgb),.55);
+}
+.switch{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:5px 0;font-size:11px;color:var(--text-soft);cursor:pointer;position:relative}
+.switch > span{flex:1;line-height:1.45}
+.switch input{position:absolute;opacity:0;width:0;height:0;pointer-events:none}
+.switch i{width:32px;height:18px;border-radius:99px;background:rgba(255,255,255,.09);border:1px solid rgba(255,255,255,.07);position:relative;flex:none;transition:.2s}
+.switch i::after{content:"";position:absolute;top:2px;left:2px;width:12px;height:12px;border-radius:50%;background:#93a8b2;transition:.2s}
+.switch input:checked + i{background:rgba(var(--accent-rgb),.3);border-color:rgba(var(--accent-rgb),.35)}
+.switch input:checked + i::after{transform:translateX(14px);background:var(--accent);box-shadow:0 0 8px rgba(var(--accent-rgb),.7)}
+.switch input:focus-visible + i{outline:2px solid rgba(var(--accent-rgb),.8);outline-offset:3px}
+.row{display:flex;gap:6px;flex-wrap:wrap}
+.btn{
+  flex:1;min-width:84px;padding:8px 9px;border-radius:8px;cursor:pointer;
+  border:1px solid rgba(var(--accent-rgb),.28);background:rgba(var(--accent-rgb),.08);
+  color:var(--accent);font-size:10.5px;letter-spacing:.02em;transition:.18s;
+}
+.btn:hover{background:rgba(var(--accent-rgb),.16);border-color:rgba(var(--accent-rgb),.45)}
+.btn:active{transform:translateY(1px)}
+.btn.ghost{border-color:var(--line);background:rgba(255,255,255,.03);color:var(--muted)}
+.btn.ghost:hover{color:var(--text-soft);border-color:var(--line-strong);background:rgba(255,255,255,.06)}
+.seg{display:grid;grid-template-columns:repeat(3,1fr);gap:3px;padding:3px;border-radius:10px;background:rgba(255,255,255,.04);border:1px solid var(--line)}
+.seg button{padding:6px 3px;border-radius:7px;border:1px solid transparent;background:transparent;color:var(--muted);font-size:10px;cursor:pointer;transition:.18s;white-space:nowrap}
+.seg button:hover{color:var(--text-soft)}
+.seg button.on{background:rgba(var(--accent-rgb),.14);border-color:rgba(var(--accent-rgb),.26);color:var(--accent)}
+
+/* ---------- stage ---------- */
+.stage-card{
+  grid-area:stage;position:relative;min-height:0;border-radius:var(--radius);overflow:hidden;isolation:isolate;
+  background:
+    radial-gradient(ellipse 70% 64% at 52% 42%,rgba(var(--accent-rgb),.06),transparent 68%),
+    radial-gradient(ellipse 55% 55% at 60% 108%,rgba(73,60,122,.1),transparent 72%),
+    linear-gradient(180deg,#091321 0%,#060d17 100%);
+}
+.stage-card::before{
+  content:"";position:absolute;inset:0;z-index:1;pointer-events:none;
+  background-image:radial-gradient(rgba(190,225,238,.1) .7px,transparent .8px);
+  background-size:26px 26px;opacity:.28;
+  -webkit-mask-image:radial-gradient(ellipse 72% 72% at 50% 44%,#000,transparent 76%);
+  mask-image:radial-gradient(ellipse 72% 72% at 50% 44%,#000,transparent 76%);
+}
+.stage-card::after{
+  content:"";position:absolute;inset:0;z-index:5;pointer-events:none;border-radius:inherit;
+  box-shadow:inset 0 0 90px rgba(0,0,0,.28),inset 0 1px 0 rgba(255,255,255,.04);
+}
+#cv{position:absolute;inset:0;width:100%;height:100%;display:block;z-index:2;touch-action:none;cursor:default}
+
+.stage-top{position:absolute;z-index:7;top:13px;left:14px;right:14px;display:flex;justify-content:space-between;align-items:flex-start;gap:10px;pointer-events:none}
+.live-badge{
+  display:flex;align-items:center;gap:9px;padding:7px 10px;border-radius:11px;
+  background:rgba(5,11,20,.7);border:1px solid rgba(201,232,242,.1);
+  backdrop-filter:blur(14px);box-shadow:0 10px 30px rgba(0,0,0,.16);
+}
+.live-dot{width:7px;height:7px;border-radius:50%;background:var(--accent);box-shadow:0 0 13px rgba(var(--accent-rgb),.8);flex:none}
+.live-copy{display:flex;flex-direction:column;gap:3px}
+.live-copy strong{line-height:1.15}
+.live-copy span{font-size:7.5px;color:var(--muted);letter-spacing:.12em}
+.live-copy strong{font-size:12.5px;font-weight:600;letter-spacing:.04em;white-space:nowrap}
+.live-idx{
+  font-family:var(--mono);font-size:8.5px;color:var(--accent);
+  background:rgba(var(--accent-rgb),.09);border:1px solid rgba(var(--accent-rgb),.18);
+  border-radius:999px;padding:3px 6px;white-space:nowrap;
+}
+.stage-tools{display:flex;gap:6px;pointer-events:auto}
+.mini-btn{
+  display:inline-flex;align-items:center;gap:5px;padding:7px 10px;border-radius:9px;
+  font-size:10px;color:var(--text-soft);cursor:pointer;
+  border:1px solid rgba(201,236,228,.12);background:rgba(5,11,20,.62);
+  backdrop-filter:blur(12px);transition:.18s;
+}
+.mini-btn:hover{background:rgba(14,28,44,.85);border-color:rgba(var(--accent-rgb),.3);color:#fff}
+.stage-note{
+  position:absolute;z-index:6;left:16px;bottom:86px;max-width:70%;
+  font-family:var(--mono);font-size:8px;letter-spacing:.05em;
+  color:rgba(170,200,212,.5);pointer-events:none;
+}
+.definition-bar{
+  position:absolute;z-index:7;left:13px;right:13px;bottom:13px;
+  display:flex;align-items:center;gap:11px;min-height:58px;padding:8px 11px;
+  border:1px solid rgba(200,232,242,.11);border-radius:13px;
+  background:rgba(5,12,21,.8);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);
+  box-shadow:0 16px 40px rgba(0,0,0,.2);
+}
+.definition-mark{
+  width:34px;height:34px;border-radius:9px;display:grid;place-items:center;flex:none;
+  color:var(--accent);border:1px solid rgba(var(--accent-rgb),.26);background:rgba(var(--accent-rgb),.08);
+  font-family:var(--mono);font-size:9.5px;letter-spacing:.02em;
+}
+.definition-copy{flex:1;min-width:0;display:flex;flex-direction:column;gap:1px}
+.def-title{font-size:7px;letter-spacing:.14em;color:var(--muted)}
+.def-formula{font-family:var(--serif);font-size:14px;line-height:1.35;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.def-values{font-family:var(--mono);font-size:8.5px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+
+/* ---------- details ---------- */
+.concept h3{margin:0;font-size:15.5px;line-height:1.45;font-weight:600;letter-spacing:.01em}
+.concept .desc{margin:5px 0 0;font-size:11px;line-height:1.72;color:var(--text-soft)}
+.desc b,.note-card b{color:#fff;font-weight:500}
+.equation-card{
+  border:1px solid rgba(var(--accent-rgb),.2);border-radius:13px;padding:9px 11px 7px;
+  background:radial-gradient(ellipse 100% 120% at 0% 0%,rgba(var(--accent-rgb),.08),transparent 58%),rgba(0,0,0,.16);
+}
+.eq-head{display:flex;justify-content:space-between;align-items:center;gap:8px;font-size:8px;letter-spacing:.08em;color:var(--muted)}
+.eq-head span:last-child{font-family:var(--mono);font-size:8px;color:var(--accent)}
+.formula{
+  font-family:var(--serif);font-size:17px;line-height:1.45;text-align:center;color:#fff;
+  padding:7px 2px 6px;letter-spacing:.01em;text-shadow:0 0 20px rgba(var(--accent-rgb),.24);
+  overflow-wrap:anywhere;
+}
+.formula sub,.formula sup{font-size:.6em}
+.metric-grid{display:grid;grid-template-columns:1fr 1fr;gap:5px}
+.hud-item{
+  display:flex;flex-direction:column;gap:2px;min-width:0;
+  padding:7px 9px;border-radius:9px;border:1px solid var(--line);
+  background:rgba(255,255,255,.025);
+}
+.hud-item span{font-size:8px;color:var(--muted);letter-spacing:.05em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hud-item b{font-family:var(--mono);font-size:11px;font-weight:500;color:var(--text-soft);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hud-item.hi{border-color:rgba(var(--accent-rgb),.26);background:rgba(var(--accent-rgb),.07)}
+.hud-item.hi b{color:var(--accent)}
+.note-card{
+  margin-top:auto;
+  border:1px solid var(--line);border-radius:12px;padding:9px 11px;
+  background:rgba(255,255,255,.025);
+}
+.tip-card{
+  margin-top:auto;border:1px solid var(--line);border-radius:11px;padding:9px 11px;
+  background:rgba(255,255,255,.02);
+}
+.tip-card span{display:block;font-size:7.5px;letter-spacing:.13em;color:var(--muted-2);text-transform:uppercase;margin-bottom:3px}
+.tip-card p{margin:0;font-size:9.5px;line-height:1.7;color:var(--muted)}
+.metric-grid .hud-item:last-child:nth-child(odd){grid-column:1/-1}
+.note-head{display:flex;align-items:center;gap:6px;font-size:8px;letter-spacing:.1em;color:var(--text-soft);text-transform:uppercase;margin-bottom:3px}
+.note-icon{
+  width:15px;height:15px;border-radius:50%;display:grid;place-items:center;
+  border:1px solid rgba(var(--accent-rgb),.3);color:var(--accent);
+  font-family:var(--serif);font-size:9px;line-height:1;
+}
+.note-card p{margin:0;font-size:10px;line-height:1.7;color:var(--muted)}
+.note-card i{font-family:var(--serif);font-style:italic;color:var(--text-soft)}
+.nw{white-space:nowrap}
+
+/* ---------- catalog ---------- */
+.catalog{
+  grid-area:catalog;min-width:0;border-radius:var(--radius);
+  padding:11px 15px 9px;display:flex;flex-direction:column;gap:7px;
+}
+.catalog-head{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.catalog-title{display:flex;align-items:flex-start;gap:9px;min-width:0}
+.catalog-head h2{margin:0;font-size:13.5px;font-weight:600;letter-spacing:.04em;line-height:1.35}
+.catalog-head p{margin:1px 0 0;font-size:9px;color:var(--muted);letter-spacing:.03em}
+.catalog-hint{font-size:8px;letter-spacing:.05em;color:var(--muted-2);white-space:nowrap;font-family:var(--mono)}
+.catalog-track{
+  display:flex;gap:6px;min-height:0;overflow-x:auto;overflow-y:hidden;
+  padding-bottom:2px;scrollbar-width:thin;scrollbar-color:rgba(255,255,255,.12) transparent;
+}
+.catalog-track::-webkit-scrollbar{height:4px}
+.catalog-track::-webkit-scrollbar-thumb{background:rgba(255,255,255,.12);border-radius:99px}
+.catalog-card{
+  flex:1 1 0;min-width:126px;display:flex;flex-direction:column;gap:1px;
+  padding:7px 10px 6px;border-radius:10px;border:1px solid var(--line);
+  background:rgba(255,255,255,.025);color:var(--text-soft);cursor:pointer;text-align:left;
+  transition:background .16s,border-color .16s,box-shadow .16s;
+}
+.catalog-card:hover{background:rgba(255,255,255,.055);border-color:rgba(255,255,255,.17)}
+.catalog-card.on{border-color:rgba(var(--tc-rgb),.35);background:rgba(var(--tc-rgb),.08);box-shadow:inset 0 0 20px rgba(var(--tc-rgb),.05)}
+.cc-top{display:flex;justify-content:space-between;align-items:baseline;gap:6px;font-family:var(--mono);font-size:7px;letter-spacing:.1em;color:var(--muted-2)}
+.cc-top b{font-weight:500;color:inherit}
+.catalog-card.on .cc-top{color:var(--tc)}
+.catalog-card strong{font-size:11px;font-weight:600;line-height:1.5;color:var(--text-soft);white-space:nowrap}
+.catalog-card.on strong{color:var(--tc)}
+.catalog-card small{font-size:8px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+
+/* ---------- responsive ---------- */
+@media(max-width:1240px){
+  .workspace{grid-template-columns:minmax(228px,246px) minmax(0,1fr) minmax(272px,296px);gap:10px}
+  .panel-controls,.panel-details{padding:13px 12px}
+  .brand h1{font-size:14px}
+}
+@media(max-width:1020px){
+  body{overflow:auto}
+  .app{height:auto;min-height:100vh;min-height:100dvh}
+  .topbar{flex:0 0 auto;flex-wrap:wrap;gap:10px;padding:10px 14px}
+  .brand{flex:1 1 100%}
+  .top-actions{width:100%;justify-content:flex-end}
+  .workspace{
+    flex:none;display:flex;flex-direction:column;gap:10px;padding:0 12px 16px;
+  }
+  .stage-card{order:1;height:min(62vh,560px);min-height:400px;flex:none}
+  .panel-controls{order:2;flex:none;overflow:visible}
+  .panel-details{order:3;flex:none;overflow:visible}
+  .catalog{order:4;flex:none;height:auto}
+  .chapter-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:3px}
+  .metric-grid{grid-template-columns:repeat(3,1fr)}
+  .catalog-track{flex-wrap:nowrap}
+  .catalog-card{flex:0 0 140px}
+}
+@media(max-width:620px){
+  .eyebrow,.title-en{display:none}
+  .status-chip{display:none}
+  .brand h1{font-size:14px}
+  .workspace{padding:0 9px 12px}
+  .stage-card{height:52vh;min-height:340px}
+  .stage-card .stage-note{display:none}
+  .definition-bar{left:10px;right:10px;bottom:10px;min-height:52px;padding:7px 9px}
+  .def-formula{font-size:12.5px}
+  .def-values{font-size:8px}
+  .definition-mark{width:29px;height:29px;font-size:8.5px}
+  .panel-controls,.panel-details{padding:12px 11px}
+  .metric-grid{grid-template-columns:1fr 1fr}
+  .catalog{padding:10px 11px 8px}
+  .catalog-hint{display:none}
+  .catalog-card{flex:0 0 132px}
+  .live-copy strong{font-size:11.5px}
+  .ci-en{display:none}
+}
+@media(min-width:1021px) and (max-height:740px){
+  .app{min-height:0}
+  .topbar{flex-basis:62px;padding:0 14px}
+  .workspace{grid-template-rows:minmax(0,1fr) 128px;gap:9px;padding:0 12px 12px}
+  .panel-controls,.panel-details{padding:11px 11px;gap:8px}
+  .catalog{padding:8px 12px 6px;gap:5px}
+  .catalog-card{padding:6px 8px 5px}
+  .catalog-card small{display:none}
+  .definition-bar{min-height:52px;padding:7px 9px}
+}
+@media(prefers-reduced-motion:reduce){
+  *{transition:none!important;animation:none!important}
+}
+</style>
+</head>
+<body>
+<div class="ambient" aria-hidden="true"><div class="glow glow-a"></div><div class="glow glow-b"></div></div>
+
+<div class="app">
+  <header class="topbar">
+    <div class="brand">
+      <div class="brand-mark" aria-hidden="true">
+        <svg viewBox="0 0 36 36" fill="none">
+          <circle cx="18" cy="18" r="3.4" fill="#69e5d0" opacity=".9"/>
+          <ellipse cx="18" cy="18" rx="13" ry="5.2" stroke="#ffc96b" stroke-width="1.2" opacity=".75" transform="rotate(-28 18 18)"/>
+          <ellipse cx="18" cy="18" rx="13" ry="5.2" stroke="#a99cff" stroke-width="1.2" opacity=".6" transform="rotate(32 18 18)"/>
+          <circle cx="28.6" cy="12.2" r="1.7" fill="#ffc96b"/>
+          <circle cx="8.4" cy="23.6" r="1.5" fill="#a99cff"/>
+        </svg>
+      </div>
+      <div class="brand-copy">
+        <div class="eyebrow"><span>Momentum Lab</span><i></i><span>选择性必修第一册 · 第 14 章</span></div>
+        <h1>动量守恒定律 <span class="title-en">/ MOMENTUM</span></h1>
+      </div>
+    </div>
+    <div class="top-actions">
+      <a class="ghost-btn" href="../index.html" title="返回总览" style="text-decoration:none">← 总览</a>
+      <div class="status-chip" id="topChip"><span class="chip-dot"></span>第 1 / 5 节</div>
+      <button class="ghost-btn" id="resetBtn" type="button" title="恢复本节初始状态">
+        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4.5 12a7.5 7.5 0 1 0 2.2-5.3M4.5 4.5V9H9" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        重置本节
+      </button>
+      <button class="icon-btn" id="fullBtn" type="button" aria-label="全屏显示" title="全屏显示">
+        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M8.5 4H4v4.5M15.5 4H20v4.5M8.5 20H4v-4.5M15.5 20H20v-4.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+    </div>
+  </header>
+
+  <main class="workspace">
+    <aside class="panel panel-controls" aria-label="情境与参数控制">
+      <div class="panel-head">
+        <span class="section-num">01</span>
+        <div><h2>情境与参数</h2><p>选择情境 · 调整变量</p></div>
+      </div>
+      <nav class="chapter-list" id="chapterList" aria-label="情境列表"></nav>
+      <div class="block-label"><span>本节控制 / Controls</span><span>拖动或调节</span></div>
+      <div class="controls" id="controls"></div>
+      <div class="tip-card">
+        <span>操作提示 / Tips</span>
+        <p>拖动画布彩色端点 · 调节滑块与开关 · ← → 切换情境 · 空格播放</p>
+      </div>
+    </aside>
+
+    <section class="stage-card" aria-label="课堂动态演示">
+      <canvas id="cv">你的浏览器需要支持 Canvas。</canvas>
+
+      <div class="stage-top">
+        <div class="live-badge">
+          <span class="live-dot"></span>
+          <div class="live-copy"><span>当前情境 / Scene</span><strong id="liveName">概念</strong></div>
+          <span class="live-idx" id="liveIndex">01</span>
+        </div>
+        <div class="stage-tools">
+          <button class="mini-btn" id="playBtn" type="button" hidden>▶ 播放</button>
+        </div>
+      </div>
+
+      <div class="stage-note" id="hint"></div>
+
+      <div class="definition-bar">
+        <div class="definition-mark" id="defMark">01</div>
+        <div class="definition-copy">
+          <div class="def-title">核心公式 / Key Formula</div>
+          <div class="def-formula" id="stageFormula"></div>
+          <div class="def-values" id="stageValues"></div>
+        </div>
+      </div>
+    </section>
+
+    <aside class="panel panel-details" aria-label="本节要点与实时数据">
+      <div class="panel-head">
+        <span class="section-num">02</span>
+        <div><h2>本节要点</h2><p>概念 · 公式 · 实时数据</p></div>
+      </div>
+      <div class="concept">
+        <h3 id="title"></h3>
+        <p class="desc" id="desc"></p>
+      </div>
+      <div class="equation-card">
+        <div class="eq-head"><span>公式 / Formula</span><span id="eqTag">01</span></div>
+        <div class="formula" id="formula"></div>
+      </div>
+      <div class="metric-grid" id="hud"></div>
+      <div class="note-card">
+        <div class="note-head"><span class="note-icon">i</span>观察提示</div>
+        <p id="note"></p>
+      </div>
+    </aside>
+
+    <section class="catalog" aria-label="情境图鉴">
+      <div class="catalog-head">
+        <div class="catalog-title">
+          <span class="section-num">03</span>
+          <div><h2>情境图鉴</h2><p>五个情境 · 点击切换</p></div>
+        </div>
+        <div class="catalog-hint">从冲量到反冲</div>
+      </div>
+      <div class="catalog-track" id="catalogTrack"></div>
+    </section>
+  </main>
+</div>
+<script>
+'use strict';
+/* ============================================================
+   基础工具
+   ============================================================ */
+const $ = s => document.querySelector(s);
+const root = document.documentElement;
+const cv = $('#cv');
+const ctx = cv.getContext('2d');
+const hudEl = $('#hud');
+const controlsEl = $('#controls');
+const SERIF = '"Cambria Math","STIX Two Math","Times New Roman",serif';
+const SANS = '"PingFang SC","Microsoft YaHei","Noto Sans SC",system-ui,sans-serif';
+const TAU = Math.PI * 2;
+
+let W = 800, H = 600, DPR = 1;
+const V = {ox: 400, oy: 300, k: 60};
+const clamp = (v, a, b) => v < a ? a : v > b ? b : v;
+const lerp = (a, b, t) => a + (b - a) * t;
+const X = x => V.ox + x * V.k;
+const Y = y => V.oy - y * V.k;
+const fmt = (n, d = 2) => {
+  if (!isFinite(n)) return '—';
+  return (Math.abs(n) < 5e-3 ? 0 : n).toFixed(d).replace('-', '−');
+};
+const deg = r => { let d = r * 180 / Math.PI % 360; return d < 0 ? d + 360 : d; };
+const len2 = (x, y) => Math.hypot(x, y);
+const easeInOut = t => t < .5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2;
+
+function setFrame(cx, cy, span) {
+  V.k = Math.min(W / span, H / (span * .62));
+  V.ox = W * cx;
+  V.oy = H * cy;
+}
+function lim() {
+  return {
+    x0: -V.ox / V.k + .25,
+    x1: (W - V.ox) / V.k - .25,
+    y0: -(H - V.oy) / V.k + .25,
+    y1: V.oy / V.k - .25
+  };
+}
+function clampPt(p) {
+  const L = lim();
+  return {x: clamp(p.x, L.x0, L.x1), y: clamp(p.y, L.y0, L.y1)};
+}
+function base() {
+  const L = lim();
+  ctx.save();
+  ctx.lineWidth = 1;
+  for (let i = Math.ceil(L.x0); i <= Math.floor(L.x1); i++) {
+    ctx.strokeStyle = i === 0 ? 'rgba(170,205,220,.15)' : 'rgba(170,205,220,.045)';
+    ctx.beginPath(); ctx.moveTo(X(i), 0); ctx.lineTo(X(i), H); ctx.stroke();
+  }
+  for (let j = Math.ceil(L.y0); j <= Math.floor(L.y1); j++) {
+    ctx.strokeStyle = j === 0 ? 'rgba(170,205,220,.15)' : 'rgba(170,205,220,.045)';
+    ctx.beginPath(); ctx.moveTo(0, Y(j)); ctx.lineTo(W, Y(j)); ctx.stroke();
+  }
+  ctx.restore();
+}
+function tscale() { return clamp(V.k / 62, .84, 1.06); }
+function math(txt, x, y, color, size = 17, align = 'center', baseline = 'middle') {
+  size = Math.max(9, size * tscale());
+  ctx.save();
+  ctx.font = 'italic ' + size + 'px ' + SERIF;
+  ctx.fillStyle = color;
+  ctx.textAlign = align;
+  ctx.textBaseline = baseline;
+  ctx.lineJoin = 'round';
+  ctx.lineWidth = Math.max(2, size * .24);
+  ctx.strokeStyle = 'rgba(5,10,18,.78)';
+  ctx.strokeText(txt, x, y);
+  ctx.fillText(txt, x, y);
+  ctx.restore();
+}
+function sans(txt, x, y, color, size = 11.5, align = 'center', baseline = 'middle') {
+  size = Math.max(8, size * tscale());
+  ctx.save();
+  ctx.font = size + 'px ' + SANS;
+  ctx.fillStyle = color;
+  ctx.textAlign = align;
+  ctx.textBaseline = baseline;
+  ctx.lineJoin = 'round';
+  ctx.lineWidth = Math.max(2, size * .24);
+  ctx.strokeStyle = 'rgba(5,10,18,.78)';
+  ctx.strokeText(txt, x, y);
+  ctx.fillText(txt, x, y);
+  ctx.restore();
+}
+function arrow(a, b, color, opt) {
+  opt = opt || {};
+  const x1 = X(a.x), y1 = Y(a.y), x2 = X(b.x), y2 = Y(b.y);
+  const dx = x2 - x1, dy = y2 - y1, L = Math.hypot(dx, dy);
+  if (L < 1) return;
+  const ux = dx / L, uy = dy / L;
+  const head = Math.min(opt.head || 11, L * .55);
+  const hw = head * .55;
+  const bx = x2 - ux * head * .88, by = y2 - uy * head * .88;
+  ctx.save();
+  ctx.globalAlpha = opt.alpha == null ? 1 : opt.alpha;
+  ctx.strokeStyle = color;
+  ctx.lineWidth = opt.w || 3;
+  ctx.lineCap = 'round';
+  ctx.lineJoin = 'round';
+  if (opt.dash) ctx.setLineDash(opt.dash);
+  if (opt.glow) { ctx.shadowColor = color; ctx.shadowBlur = opt.glow; }
+  ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(bx, by); ctx.stroke();
+  ctx.setLineDash([]);
+  ctx.fillStyle = color;
+  ctx.beginPath();
+  ctx.moveTo(x2, y2);
+  ctx.lineTo(bx - uy * hw, by + ux * hw);
+  ctx.lineTo(bx + uy * hw, by - ux * hw);
+  ctx.closePath();
+  ctx.fill();
+  ctx.restore();
+}
+function line(a, b, color, opt) {
+  opt = opt || {};
+  ctx.save();
+  ctx.globalAlpha = opt.alpha == null ? 1 : opt.alpha;
+  ctx.strokeStyle = color;
+  ctx.lineWidth = opt.w || 1.4;
+  ctx.lineCap = 'round';
+  if (opt.dash) ctx.setLineDash(opt.dash);
+  ctx.beginPath(); ctx.moveTo(X(a.x), Y(a.y)); ctx.lineTo(X(b.x), Y(b.y)); ctx.stroke();
+  ctx.restore();
+}
+function dot(p, color, r = 4) {
+  ctx.save();
+  ctx.fillStyle = color;
+  ctx.shadowColor = color;
+  ctx.shadowBlur = 10;
+  ctx.beginPath(); ctx.arc(X(p.x), Y(p.y), r, 0, TAU); ctx.fill();
+  ctx.restore();
+}
+function handle(p, color, active) {
+  const x = X(p.x), y = Y(p.y);
+  ctx.save();
+  ctx.shadowColor = 'rgba(0,0,0,.55)';
+  ctx.shadowBlur = 8;
+  ctx.beginPath(); ctx.arc(x, y, active ? 9 : 7, 0, TAU);
+  ctx.fillStyle = '#0a111d'; ctx.fill();
+  ctx.shadowBlur = 0;
+  ctx.lineWidth = 2.2;
+  ctx.strokeStyle = color;
+  ctx.stroke();
+  ctx.beginPath(); ctx.arc(x, y, 2.3, 0, TAU);
+  ctx.fillStyle = color; ctx.fill();
+  ctx.restore();
+}
+function vlabel(a, b, txt, color, off = 18, size = 18) {
+  const x1 = X(a.x), y1 = Y(a.y), x2 = X(b.x), y2 = Y(b.y);
+  const mx = (x1 + x2) / 2, my = (y1 + y2) / 2;
+  const dx = x2 - x1, dy = y2 - y1, L = Math.hypot(dx, dy) || 1;
+  let nx = -dy / L, ny = dx / L;
+  if (ny > 0) { nx = -nx; ny = -ny; }
+  off *= tscale();
+  math(txt, mx + nx * off, my + ny * off, color, size);
+}
+function segLabel(a, b, txt, color, frac, off, size) {
+  frac = frac == null ? .5 : frac;
+  off = off == null ? 16 : off;
+  size = size || 12;
+  const x1 = X(a.x), y1 = Y(a.y), x2 = X(b.x), y2 = Y(b.y);
+  const px = lerp(x1, x2, frac), py = lerp(y1, y2, frac);
+  const dx = x2 - x1, dy = y2 - y1, L = Math.hypot(dx, dy) || 1;
+  let nx = -dy / L, ny = dx / L;
+  if (ny > 0) { nx = -nx; ny = -ny; }
+  off *= tscale();
+  sans(txt, px + nx * off, py + ny * off, color, size);
+}
+function segMath(a, b, txt, color, frac, off, size) {
+  frac = frac == null ? .5 : frac;
+  off = off == null ? 16 : off;
+  size = size || 17;
+  const x1 = X(a.x), y1 = Y(a.y), x2 = X(b.x), y2 = Y(b.y);
+  const px = lerp(x1, x2, frac), py = lerp(y1, y2, frac);
+  const dx = x2 - x1, dy = y2 - y1, L = Math.hypot(dx, dy) || 1;
+  let nx = -dy / L, ny = dx / L;
+  if (ny > 0) { nx = -nx; ny = -ny; }
+  off *= tscale();
+  math(txt, px + nx * off, py + ny * off, color, size);
+}
+function angleArc(c, th1, th2, r, color, txt, size = 15) {
+  let d = ((th2 - th1 + Math.PI) % TAU + TAU) % TAU - Math.PI;
+  if (Math.abs(d) < .02) return;
+  ctx.save();
+  ctx.strokeStyle = color;
+  ctx.lineWidth = 1.8;
+  ctx.beginPath();
+  ctx.arc(X(c.x), Y(c.y), r, -th1, -(th1 + d), d > 0);
+  ctx.stroke();
+  ctx.restore();
+  if (txt) {
+    const mid = th1 + d / 2;
+    sans(txt, X(c.x) + Math.cos(mid) * (r + 22), Y(c.y) - Math.sin(mid) * (r + 22), color, size);
+  }
+}
+function rightAngle(center, u, v, s, color) {
+  const cx = X(center.x), cy = Y(center.y);
+  const ux = u.x, uy = -u.y, vx = v.x, vy = -v.y;
+  ctx.save();
+  ctx.strokeStyle = color;
+  ctx.lineWidth = 1.2;
+  ctx.setLineDash([]);
+  ctx.beginPath();
+  ctx.moveTo(cx + ux * s, cy + uy * s);
+  ctx.lineTo(cx + (ux + vx) * s, cy + (uy + vy) * s);
+  ctx.lineTo(cx + vx * s, cy + vy * s);
+  ctx.stroke();
+  ctx.restore();
+}
+function vecText(p) {
+  return '(' + fmt(p.x) + ', ' + fmt(p.y) + ')';
+}
+
+/* ============================================================
+   控件构造
+   ============================================================ */
+function addSlider(parent, label, min, max, step, value, format, onInput) {
+  const w = document.createElement('label');
+  w.className = 'ctrl';
+  const top = document.createElement('div');
+  top.className = 'ctrl-top';
+  const l = document.createElement('span');
+  l.textContent = label;
+  const b = document.createElement('b');
+  b.textContent = format(value);
+  top.append(l, b);
+  const inp = document.createElement('input');
+  inp.type = 'range';
+  inp.min = min; inp.max = max; inp.step = step; inp.value = value;
+  inp.addEventListener('input', () => {
+    const v = parseFloat(inp.value);
+    b.textContent = format(v);
+    onInput(v);
+  });
+  w.append(top, inp);
+  parent.appendChild(w);
+  return {
+    input: inp,
+    set(v, fire) {
+      inp.value = v;
+      b.textContent = format(v);
+      if (fire) onInput(v);
+    }
+  };
+}
+function addToggle(parent, label, value, onChange) {
+  const w = document.createElement('label');
+  w.className = 'switch';
+  const s = document.createElement('span');
+  s.textContent = label;
+  const inp = document.createElement('input');
+  inp.type = 'checkbox';
+  inp.checked = !!value;
+  const i = document.createElement('i');
+  inp.addEventListener('change', () => onChange(inp.checked));
+  w.append(s, inp, i);
+  parent.appendChild(w);
+  return {input: inp};
+}
+function addBtn(parent, label, fn, cls) {
+  const b = document.createElement('button');
+  b.className = 'btn ' + (cls || '');
+  b.textContent = label;
+  b.addEventListener('click', fn);
+  parent.appendChild(b);
+  return b;
+}
+function row(parent) {
+  const r = document.createElement('div');
+  r.className = 'row';
+  parent.appendChild(r);
+  return r;
+}
+/* ============================================================
+   物理绘图扩展
+   ============================================================ */
+function path(pts, color, opt) {
+  opt = opt || {};
+  if (!pts || pts.length < 2) return;
+  ctx.save();
+  ctx.globalAlpha = opt.alpha == null ? 1 : opt.alpha;
+  ctx.strokeStyle = color;
+  ctx.lineWidth = opt.w || 2;
+  ctx.lineCap = 'round';
+  ctx.lineJoin = 'round';
+  if (opt.dash) ctx.setLineDash(opt.dash);
+  if (opt.glow) { ctx.shadowColor = color; ctx.shadowBlur = opt.glow; }
+  ctx.beginPath();
+  ctx.moveTo(X(pts[0].x), Y(pts[0].y));
+  for (let i = 1; i < pts.length; i++) ctx.lineTo(X(pts[i].x), Y(pts[i].y));
+  if (opt.close) ctx.closePath();
+  if (opt.fill) { ctx.fillStyle = opt.fill; ctx.fill(); }
+  if (!opt.fillOnly) ctx.stroke();
+  ctx.restore();
+}
+function poly(pts, fill, stroke, opt) {
+  opt = opt || {};
+  opt.close = true;
+  if (fill) opt.fill = fill;
+  path(pts, stroke || 'transparent', opt);
+}
+function rect(a, b, fill, stroke, opt) {
+  opt = opt || {};
+  const x0 = Math.min(a.x, b.x), x1 = Math.max(a.x, b.x);
+  const y0 = Math.min(a.y, b.y), y1 = Math.max(a.y, b.y);
+  const p = {x: x0, y: y0}, q = {x: x1, y: y1};
+  ctx.save();
+  ctx.globalAlpha = opt.alpha == null ? 1 : opt.alpha;
+  ctx.beginPath();
+  ctx.rect(X(p.x), Y(q.y), (q.x - p.x) * V.k, (q.y - p.y) * V.k);
+  if (fill) { ctx.fillStyle = fill; ctx.fill(); }
+  if (stroke) {
+    ctx.strokeStyle = stroke;
+    ctx.lineWidth = opt.w || 1.6;
+    if (opt.dash) ctx.setLineDash(opt.dash);
+    ctx.stroke();
+  }
+  ctx.restore();
+}
+function circleAt(c, r, fill, stroke, opt) {
+  opt = opt || {};
+  ctx.save();
+  ctx.globalAlpha = opt.alpha == null ? 1 : opt.alpha;
+  ctx.beginPath();
+  ctx.arc(X(c.x), Y(c.y), Math.abs(r * V.k), 0, TAU);
+  if (fill) { ctx.fillStyle = fill; ctx.fill(); }
+  if (stroke) {
+    ctx.strokeStyle = stroke;
+    ctx.lineWidth = opt.w || 1.6;
+    if (opt.dash) ctx.setLineDash(opt.dash);
+    ctx.stroke();
+  }
+  ctx.restore();
+}
+function spring(a, b, coils, color, opt) {
+  opt = opt || {};
+  const n = coils || 9, amp = (opt.amp == null ? .16 : opt.amp);
+  const dx = b.x - a.x, dy = b.y - a.y;
+  const L = Math.hypot(dx, dy) || 1;
+  const ux = dx / L, uy = dy / L, nx = -uy, ny = ux;
+  const pts = [{x: a.x, y: a.y}];
+  const lead = L * .12;
+  pts.push({x: a.x + ux * lead, y: a.y + uy * lead});
+  for (let i = 0; i < n; i++) {
+    const t = lead + (L - 2 * lead) * (i + .5) / n;
+    const s = (i % 2 ? -1 : 1) * amp;
+    pts.push({x: a.x + ux * t + nx * s, y: a.y + uy * t + ny * s});
+  }
+  pts.push({x: b.x - ux * lead, y: b.y - uy * lead});
+  pts.push({x: b.x, y: b.y});
+  path(pts, color, {w: opt.w || 1.8, alpha: opt.alpha, glow: opt.glow});
+}
+function ground(y, color, opt) {
+  opt = opt || {};
+  const L = lim();
+  const c = color || 'rgba(150,190,205,.55)';
+  line({x: L.x0, y: y}, {x: L.x1, y: y}, c, {w: opt.w || 1.8});
+  ctx.save();
+  ctx.strokeStyle = c;
+  ctx.globalAlpha = .5;
+  ctx.lineWidth = 1;
+  const y0 = Y(y);
+  for (let x = 0; x < W; x += 9) {
+    ctx.beginPath();
+    ctx.moveTo(x, y0 + 1);
+    ctx.lineTo(x - 6, y0 + 7);
+    ctx.stroke();
+  }
+  ctx.restore();
+}
+function addSeg(parent, items, idx, onPick) {
+  const box = document.createElement('div');
+  box.className = 'seg';
+  const btns = items.map((txt, i) => {
+    const b = document.createElement('button');
+    b.type = 'button';
+    b.textContent = txt;
+    if (i === idx) b.className = 'on';
+    b.addEventListener('click', () => {
+      btns.forEach((x, j) => x.classList.toggle('on', j === i));
+      onPick(i);
+    });
+    box.appendChild(b);
+    return b;
+  });
+  parent.appendChild(box);
+  return {
+    set(i) { btns.forEach((x, j) => x.classList.toggle('on', j === i)); }
+  };
+}
+
+const MODULES = [];
+
+/* ============================================================
+   选择性必修第一册 · 第 1 章 动量守恒定律
+   01 冲量与动量定理  02 动量守恒（碰撞）  03 弹性与非弹性碰撞
+   04 反冲与火箭      05 人船模型
+   ============================================================ */
+(function () {
+
+function f1(v) {
+  const s = (Math.abs(v) < 5e-2 ? 0 : v).toFixed(1);
+  return s.replace('-', '−');
+}
+function f2(v) {
+  const s = (Math.abs(v) < 5e-3 ? 0 : v).toFixed(2);
+  return s.replace(/0+$/, '').replace(/\.$/, '').replace('-', '−');
+}
+
+/* ---------- 通用绘图小工具 ---------- */
+function rail(x0, x1, y, color) {
+  line({x: x0, y: y}, {x: x1, y: y}, color || 'rgba(200,228,236,.42)', {w: 1.6});
+  for (let x = Math.ceil(x0); x <= Math.floor(x1); x++) {
+    line({x: x, y: y}, {x: x - .16, y: y - .2}, 'rgba(200,228,236,.16)', {w: 1});
+  }
+}
+
+function cart(x, y, hw, color, label) {
+  rect({x: x - hw, y: y - .46}, {x: x + hw, y: y + .02}, 'rgba(12,22,34,.9)', color, {w: 1.8});
+  circleAt({x: x - hw * .55, y: y - .54}, .12, '#08111c', color, {w: 1.2});
+  circleAt({x: x + hw * .55, y: y - .54}, .12, '#08111c', color, {w: 1.2});
+  if (label) sans(label, X(x), Y(y + .34), color, 11);
+}
+
+function barH(zx, y, w0, fill, stroke) {
+  const x1 = zx + w0;
+  rect({x: Math.min(zx, x1), y: y - .17}, {x: Math.max(zx, x1), y: y + .17}, fill, stroke, {w: 1.3});
+}
+
+/* ---------- 01 冲量与动量定理 ---------- */
+MODULES.push({
+  key: 'impulse', tab: '01', name: '冲量与动量', en: 'IMPULSE', blurb: '力在时间上的积累',
+  accent: '#ffa97a', rgb: '255,169,122',
+  hint: '调节力、质量与作用时间，看 F-t 图线下的面积怎样改变动量',
+  playable: true,
+  state: {t: 0, playing: true, m: 2, v0: 1, F: 6, dur: .8, showArea: true},
+  reset() {
+    const s = this.state;
+    s.t = 0; s.playing = true; s.m = 2; s.v0 = 1; s.F = 6; s.dur = .8; s.showArea = true;
+  },
+  meta() {
+    return {
+      title: '冲量：力在时间上的积累',
+      desc: '小车在光滑水平面上受水平恒力作用而加速。下方 F-t 图象里，图线与时间轴围成的矩形面积就是这段时间内力的冲量；面积越大，小车动量的改变越大。改变力、质量与作用时间，验证 I = Δp。',
+      formula: 'I = FΔt = Δp = mv′ − mv<sub>0</sub>',
+      note: '同样的冲量，作用时间越长需要的力越小，这就是<b>缓冲</b>的原理：安全气囊、跳高垫都在延长 Δt。'
+    };
+  },
+  acc() { return this.state.F / this.state.m; },
+  vAt(t) { const s = this.state; return s.v0 + this.acc() * Math.min(t, s.dur); },
+  sAt(t) {
+    const s = this.state, td = Math.min(t, s.dur);
+    return s.v0 * td + .5 * this.acc() * td * td + (t > s.dur ? this.vAt(s.dur) * (t - s.dur) : 0);
+  },
+  gx(t) { return -6.3 + t * 5.5; },
+  gy(F) { return -2.5 + F * .295; },
+  draw(dt) {
+    const s = this.state;
+    if (s.playing) { s.t += dt; if (s.t > 2) s.t = 0; }
+    setFrame(.5, .56, 15);
+    base();
+
+    /* 轨道与小车 */
+    rail(-6.8, 6.8, 2.35);
+    const xw = clamp(-5.6 + this.sAt(s.t) * .55, -6.2, 5.9);
+    cart(xw, 2.35, .6, '#ffa97a', 'm = ' + f1(s.m) + ' kg');
+    const v = this.vAt(s.t);
+    if (v > .05) {
+      arrow({x: xw + .72, y: 2.85}, {x: xw + .72 + clamp(v * .42, .35, 2.5), y: 2.85}, '#6cb6ff', {w: 2.6, head: 12});
+      sans('v = ' + f1(v) + ' m/s', X(xw + .72), Y(3.2), '#a8d0ff', 11.5, 'center');
+    }
+    if (s.t < s.dur) {
+      arrow({x: xw - .95, y: 1.9}, {x: xw - .95 + clamp(s.F * .14, .4, 1.4), y: 1.9}, '#ff8fab', {w: 2.6, head: 11});
+      sans('F = ' + f1(s.F) + ' N', X(xw - .95 + .7), Y(1.9) - 14, '#ffb3c6', 11, 'center');
+    }
+
+    /* F-t 图象 */
+    const zy = this.gy(0);
+    line({x: -6.5, y: zy}, {x: 5.2, y: zy}, 'rgba(198,222,232,.45)', {w: 1.5});
+    line({x: -6.5, y: zy}, {x: -6.5, y: this.gy(9)}, 'rgba(198,222,232,.45)', {w: 1.5});
+    arrow({x: 4.8, y: zy}, {x: 5.2, y: zy}, 'rgba(198,222,232,.6)', {w: 1.2, head: 9});
+    arrow({x: -6.5, y: this.gy(8.6)}, {x: -6.5, y: this.gy(9)}, 'rgba(198,222,232,.6)', {w: 1.2, head: 9});
+    sans('t / s', X(5.2) - 4, Y(zy) + 15, 'rgba(170,198,210,.85)', 11, 'right');
+    sans('F / N', X(-6.5) - 8, Y(this.gy(8.8)), 'rgba(170,198,210,.85)', 11, 'right');
+    for (let t = 0; t <= 2.001; t += .5) {
+      line({x: this.gx(t), y: zy}, {x: this.gx(t), y: zy - .07}, 'rgba(198,222,232,.4)', {w: 1});
+      sans(f1(t), X(this.gx(t)), Y(zy) + 14, 'rgba(160,190,205,.7)', 10, 'center');
+    }
+    for (let F = 2; F <= 8; F += 2) {
+      line({x: -6.5, y: this.gy(F)}, {x: -6.4, y: this.gy(F)}, 'rgba(198,222,232,.4)', {w: 1});
+      sans(String(F), X(-6.5) - 9, Y(this.gy(F)), 'rgba(160,190,205,.7)', 10, 'right');
+    }
+
+    if (s.showArea && s.dur > .02) {
+      poly([
+        {x: this.gx(0), y: zy}, {x: this.gx(0), y: this.gy(s.F)},
+        {x: this.gx(s.dur), y: this.gy(s.F)}, {x: this.gx(s.dur), y: zy}
+      ], 'rgba(255,169,122,.16)', 'rgba(255,169,122,.5)', {w: 1.2});
+      sans('面积 = 冲量', X((this.gx(0) + this.gx(s.dur)) / 2), Y(this.gy(s.F)) - 12,
+        'rgba(255,196,160,.9)', 10.5, 'center');
+    }
+    line({x: this.gx(0), y: this.gy(s.F)}, {x: this.gx(s.dur), y: this.gy(s.F)}, '#ffa97a', {w: 3, glow: 8});
+    if (s.t <= s.dur) dot({x: this.gx(s.t), y: this.gy(s.F)}, '#fff0e2', 5);
+
+    sans('I = FΔt = ' + f1(s.F * s.dur) + ' N·s　　p = mv = ' + f2(s.m * v) + ' kg·m/s',
+      X(-6.5), Y(1.55), 'rgba(255,208,176,.92)', 12.5, 'left');
+  },
+  hud() {
+    const s = this.state, v = this.vAt(s.t);
+    return [
+      {k: '质量 m', v: f1(s.m) + ' kg'},
+      {k: '冲量 I', v: f1(s.F * s.dur) + ' N·s', hi: true},
+      {k: '末速度 v′', v: f1(this.vAt(s.dur)) + ' m/s'},
+      {k: '动量 p', v: f2(s.m * v) + ' kg·m/s', hi: true},
+      {k: '动量变化 Δp', v: f2(s.m * v - s.m * s.v0) + ' kg·m/s'}
+    ];
+  },
+  panel(el) {
+    const s = this.state;
+    addSlider(el, '质量 m / kg', 1, 4, .5, s.m, v => f1(v), v => s.m = v);
+    addSlider(el, '初速度 v₀ / (m/s)', 0, 2, .1, s.v0, v => f1(v), v => s.v0 = v);
+    addSlider(el, '作用力 F / N', 1, 8, .5, s.F, v => f1(v), v => s.F = v);
+    addSlider(el, '作用时间 Δt / s', .2, .9, .05, s.dur, v => v.toFixed(2), v => s.dur = v);
+    addToggle(el, '显示冲量面积', s.showArea, v => s.showArea = v);
+    addBtn(el, '重新计时', () => { s.t = 0; }, 'ghost');
+  },
+  togglePlay() { this.state.playing = !this.state.playing; },
+  playLabel() { return this.state.playing ? '⏸ 暂停' : '▶ 播放'; }
+});
+
+/* ---------- 02 动量守恒（碰撞） ---------- */
+MODULES.push({
+  key: 'conserve', tab: '02', name: '动量守恒', en: 'CONSERVATION', blurb: '碰撞前后总量不变',
+  accent: '#6cb6ff', rgb: '108,182,255',
+  hint: '改变两车质量与碰前速度，观察三根动量柱的总量始终不变',
+  playable: true,
+  state: {t: 0, playing: true, m1: 2, m2: 1, v1: 1.6, showBars: true},
+  reset() {
+    const s = this.state;
+    s.t = 0; s.playing = true; s.m1 = 2; s.m2 = 1; s.v1 = 1.6; s.showBars = true;
+  },
+  meta() {
+    return {
+      title: '系统不受外力，总动量保持不变',
+      desc: '气垫导轨上两车相碰，碰撞时两车之间的作用力等大反向、同时产生。碰后 A 车变慢或倒退，B 车被推着前进，但两车动量的矢量和始终等于碰前的总动量。',
+      formula: 'm<sub>1</sub>v<sub>1</sub> + m<sub>2</sub>v<sub>2</sub> = m<sub>1</sub>v<sub>1</sub>′ + m<sub>2</sub>v<sub>2</sub>′',
+      note: '动量是矢量，<b>先规定正方向</b>再代入正负号。碰后总动量不变，但每一车的动量都发生了明显改变。'
+    };
+  },
+  tc() {
+    const s = this.state;
+    return Math.max(.4, 4.56 / Math.max(.4, s.v1)) - .15;
+  },
+  post() {
+    const s = this.state, v2 = 0;
+    const u1 = ((s.m1 - s.m2) * s.v1 + 2 * s.m2 * v2) / (s.m1 + s.m2);
+    const u2 = ((s.m2 - s.m1) * v2 + 2 * s.m1 * s.v1) / (s.m1 + s.m2);
+    return {u1: u1, u2: u2};
+  },
+  pos() {
+    const s = this.state, tc = this.tc(), q = this.post();
+    const x10 = -5.8, x20 = .2;
+    if (s.t < tc) return {a: x10 + s.v1 * s.t, b: x20, va: s.v1, vb: 0};
+    const dt = s.t - tc;
+    return {a: x10 + s.v1 * tc + q.u1 * dt, b: x20 + q.u2 * dt, va: q.u1, vb: q.u2};
+  },
+  draw(dt) {
+    const s = this.state;
+    if (s.playing) {
+      s.t += dt * 1.1;
+      if (s.t > 5) s.t = 0;
+    }
+    setFrame(.5, .56, 15);
+    base();
+    const p = this.pos(), tc = this.tc();
+
+    rail(-6.9, 6.9, 2.3);
+    sans('气垫导轨（摩擦可忽略）', X(-6.7), Y(2.85), 'rgba(160,190,205,.6)', 10.5, 'left');
+
+    cart(p.a, 2.3, .62, '#6cb6ff', 'A');
+    cart(p.b, 2.3, .62, '#5eead4', 'B');
+
+    if (Math.abs(p.va) > .06) {
+      const L1 = clamp(Math.abs(p.va) * .55, .3, 2.2) * (p.va > 0 ? 1 : -1);
+      arrow({x: p.a, y: 1.22}, {x: p.a + L1, y: 1.22}, '#6cb6ff', {w: 2.6, head: 11});
+      sans(f1(Math.abs(p.va)) + ' m/s', X(p.a + L1 / 2), Y(1.22) - 14, '#a8d0ff', 10.5);
+    }
+    if (Math.abs(p.vb) > .06) {
+      const L2 = clamp(Math.abs(p.vb) * .55, .3, 2.2) * (p.vb > 0 ? 1 : -1);
+      arrow({x: p.b, y: 1.22}, {x: p.b + L2, y: 1.22}, '#5eead4', {w: 2.6, head: 11});
+      sans(f1(Math.abs(p.vb)) + ' m/s', X(p.b + L2 / 2), Y(1.22) - 14, '#8fe9d8', 10.5);
+    }
+
+    if (s.t > tc - .12 && s.t < tc + .22) {
+      circleAt({x: (p.a + p.b) / 2, y: 2.3}, .55 + (s.t - tc + .12) * 2.2, null, 'rgba(255,255,255,.5)', {w: 1.4});
+    }
+
+    /* 动量柱 */
+    const zx = -1.2, sc = .45;
+    const p1 = s.m1 * p.va, p2 = s.m2 * p.vb, pt = p1 + p2;
+    if (s.showBars) {
+      line({x: zx, y: -2.75}, {x: zx, y: -.15}, 'rgba(198,222,232,.35)', {w: 1.2});
+      barH(zx, -.5, p1 * sc, 'rgba(108,182,255,.28)', 'rgba(108,182,255,.85)');
+      barH(zx, -1.4, p2 * sc, 'rgba(94,234,212,.28)', 'rgba(94,234,212,.85)');
+      barH(zx, -2.3, pt * sc, 'rgba(255,197,107,.22)', 'rgba(255,197,107,.9)');
+      sans('p₁（A）', X(-6.8), Y(-.5), '#9ecbff', 10.5, 'left');
+      sans('p₂（B）', X(-6.8), Y(-1.4), '#8fe9d8', 10.5, 'left');
+      sans('p 总', X(-6.8), Y(-2.3), '#ffd79a', 10.5, 'left');
+      sans(f2(p1) + ' kg·m/s', X(6.4), Y(-.5), 'rgba(158,203,255,.85)', 10.5, 'right');
+      sans(f2(p2) + ' kg·m/s', X(6.4), Y(-1.4), 'rgba(143,233,216,.85)', 10.5, 'right');
+      sans(f2(pt) + ' kg·m/s', X(6.4), Y(-2.3), 'rgba(255,215,154,.95)', 10.5, 'right');
+    }
+    sans(s.t < tc ? '碰撞前' : '碰撞后', X(6.4), Y(1.9), 'rgba(180,210,220,.7)', 12, 'right');
+  },
+  hud() {
+    const s = this.state, p = this.pos();
+    const p1 = s.m1 * p.va, p2 = s.m2 * p.vb;
+    return [
+      {k: 'A 车动量', v: f2(p1) + ' kg·m/s'},
+      {k: 'B 车动量', v: f2(p2) + ' kg·m/s'},
+      {k: '总动量 p', v: f2(p1 + p2) + ' kg·m/s', hi: true},
+      {k: 'A 车速度', v: f1(p.va) + ' m/s'},
+      {k: 'B 车速度', v: f1(p.vb) + ' m/s', hi: true}
+    ];
+  },
+  panel(el) {
+    const s = this.state;
+    addSlider(el, 'A 车质量 m₁ / kg', 1, 3, .5, s.m1, v => f1(v), v => { s.m1 = v; s.t = 0; });
+    addSlider(el, 'B 车质量 m₂ / kg', 1, 3, .5, s.m2, v => f1(v), v => { s.m2 = v; s.t = 0; });
+    addSlider(el, 'A 车初速度 v₁ / (m/s)', .8, 2.4, .1, s.v1, v => f1(v), v => { s.v1 = v; s.t = 0; });
+    addToggle(el, '显示动量柱', s.showBars, v => s.showBars = v);
+    addBtn(el, '重新碰撞', () => { s.t = 0; }, 'ghost');
+  },
+  togglePlay() { this.state.playing = !this.state.playing; },
+  playLabel() { return this.state.playing ? '⏸ 暂停' : '▶ 播放'; }
+});
+
+/* ---------- 03 弹性与非弹性碰撞 ---------- */
+MODULES.push({
+  key: 'collide', tab: '03', name: '碰撞分类', en: 'COLLISIONS', blurb: '动能去哪了',
+  accent: '#b49cff', rgb: '180,156,255',
+  hint: '切换碰撞类型，比较碰前与碰后的总动能',
+  playable: true,
+  state: {t: 0, playing: true, e: 1, m1: 2, m2: 2, showE: true},
+  reset() {
+    const s = this.state;
+    s.t = 0; s.playing = true; s.e = 1; s.m1 = 2; s.m2 = 2; s.showE = true;
+  },
+  meta() {
+    return {
+      title: '碰撞中动量一定守恒，动能不一定',
+      desc: '两车以相同速率对撞。弹性碰撞后两车各自弹回，动能几乎不损失；完全非弹性碰撞后两车粘在一起，动能损失最大。切换碰撞类型，比较碰前碰后的动能柱。',
+      formula: 'e = (v<sub>2</sub>′ − v<sub>1</sub>′)/(v<sub>1</sub> − v<sub>2</sub>)，e = 1 弹性，e = 0 完全非弹性',
+      note: '动量是矢量，碰撞中<b>总能守恒</b>；动能是标量，非弹性碰撞中一部分转化为内能和声能。'
+    };
+  },
+  tc() { return 3.05; },
+  post() {
+    const s = this.state, v1 = 1.7, v2 = -1.7;
+    const P = s.m1 * v1 + s.m2 * v2, M = s.m1 + s.m2;
+    const u1 = (P + s.m2 * s.e * (v2 - v1)) / M;
+    const u2 = (P + s.m1 * s.e * (v1 - v2)) / M;
+    return {u1: u1, u2: u2};
+  },
+  pos() {
+    const s = this.state, tc = this.tc(), q = this.post();
+    if (s.t < tc) return {a: -5.8 + 1.7 * s.t, b: 5.8 - 1.7 * s.t, va: 1.7, vb: -1.7};
+    const dt = s.t - tc;
+    if (s.e < .04) {
+      const c = q.u1 * dt;
+      return {a: -.62 + c, b: .62 + c, va: q.u1, vb: q.u2};
+    }
+    return {a: -.39 + q.u1 * dt, b: .39 + q.u2 * dt, va: q.u1, vb: q.u2};
+  },
+  draw(dt) {
+    const s = this.state;
+    if (s.playing) { s.t += dt * 1.05; if (s.t > 5.9) s.t = 0; }
+    setFrame(.5, .56, 15);
+    base();
+    const p = this.pos();
+
+    rail(-6.9, 6.9, 2.55);
+    cart(p.a, 2.55, .62, '#b49cff', 'A');
+    cart(p.b, 2.55, .62, '#ff8fab', 'B');
+    if (Math.abs(p.va) > .06) {
+      const L = clamp(Math.abs(p.va) * .5, .3, 1.9) * (p.va > 0 ? 1 : -1);
+      arrow({x: p.a, y: 1.3}, {x: p.a + L, y: 1.3}, '#b49cff', {w: 2.4, head: 10});
+      sans(f1(Math.abs(p.va)) + ' m/s', X(p.a + L / 2), Y(1.3) - 14, '#cabaff', 10);
+    }
+    if (Math.abs(p.vb) > .06) {
+      const L = clamp(Math.abs(p.vb) * .5, .3, 1.9) * (p.vb > 0 ? 1 : -1);
+      arrow({x: p.b, y: 1.3}, {x: p.b + L, y: 1.3}, '#ff8fab', {w: 2.4, head: 10});
+      sans(f1(Math.abs(p.vb)) + ' m/s', X(p.b + L / 2), Y(1.3) - 14, '#ffb3c6', 10);
+    }
+
+    const names = ['弹性碰撞', '一般非弹性', '完全非弹性'];
+    const idx = s.e > .85 ? 0 : s.e > .2 ? 1 : 2;
+    sans('碰撞类型：' + names[idx], X(-6.6), Y(3.15), 'rgba(200,180,255,.9)', 12.5, 'left');
+
+    /* 动能柱 */
+    const E1 = .5 * s.m1 * 1.7 * 1.7 + .5 * s.m2 * 1.7 * 1.7;
+    const E2 = .5 * s.m1 * p.va * p.va + .5 * s.m2 * p.vb * p.vb;
+    const zx = -5.7, sc = .42;
+    if (s.showE) {
+      line({x: zx, y: -2.85}, {x: zx, y: -.15}, 'rgba(198,222,232,.35)', {w: 1.2});
+      barH(zx, -.8, E1 * sc, 'rgba(180,156,255,.25)', 'rgba(180,156,255,.85)');
+      barH(zx, -2.1, E2 * sc, 'rgba(255,143,171,.25)', 'rgba(255,143,171,.85)');
+      sans('碰前总动能', X(zx) + 12, Y(-.45), '#cabaff', 10.5, 'left');
+      sans(f1(E1) + ' J', X(zx) + 12, Y(-1.05), 'rgba(202,186,255,.8)', 10.5, 'left');
+      sans('碰后总动能', X(zx) + 12, Y(-1.75), '#ffb3c6', 10.5, 'left');
+      sans(f1(E2) + ' J', X(zx) + 12, Y(-2.35), 'rgba(255,179,198,.8)', 10.5, 'left');
+      const loss = E1 - E2;
+      sans('损失 ' + f1(loss) + ' J（' + f1(loss / Math.max(.01, E1) * 100) + '%）',
+        X(4.2), Y(-.9), 'rgba(255,225,160,.9)', 12, 'center');
+      sans(idx === 0 ? '动能几乎全部保留' : idx === 1 ? '一部分动能转化为内能' : '两车同速，损失最大',
+        X(4.2), Y(-1.55), 'rgba(180,205,215,.75)', 11, 'center');
+    }
+  },
+  hud() {
+    const s = this.state, p = this.pos();
+    const E1 = .5 * s.m1 * 1.7 * 1.7 + .5 * s.m2 * 1.7 * 1.7;
+    const E2 = .5 * s.m1 * p.va * p.va + .5 * s.m2 * p.vb * p.vb;
+    return [
+      {k: '恢复系数 e', v: s.e.toFixed(2), hi: true},
+      {k: '碰前动能', v: f1(E1) + ' J'},
+      {k: '碰后动能', v: f1(E2) + ' J', hi: true},
+      {k: '动能损失', v: f1(Math.max(0, E1 - E2)) + ' J'},
+      {k: '系统总动量', v: f2(s.m1 * p.va + s.m2 * p.vb) + ' kg·m/s'}
+    ];
+  },
+  panel(el) {
+    const s = this.state;
+    const seg = addSeg(el, ['弹性', '一般', '完全非弹'], s.e > .85 ? 0 : s.e > .2 ? 1 : 2, i => {
+      s.e = i === 0 ? 1 : i === 1 ? .5 : 0;
+      s.t = 0;
+      seg.set(i);
+    });
+    addSlider(el, 'A 车质量 m₁ / kg', 1, 3, .5, s.m1, v => f1(v), v => { s.m1 = v; s.t = 0; });
+    addSlider(el, 'B 车质量 m₂ / kg', 1, 3, .5, s.m2, v => f1(v), v => { s.m2 = v; s.t = 0; });
+    addToggle(el, '显示动能柱', s.showE, v => s.showE = v);
+    addBtn(el, '重新碰撞', () => { s.t = 0; }, 'ghost');
+  },
+  togglePlay() { this.state.playing = !this.state.playing; },
+  playLabel() { return this.state.playing ? '⏸ 暂停' : '▶ 播放'; }
+});
+
+/* ---------- 04 反冲与火箭 ---------- */
+MODULES.push({
+  key: 'rocket', tab: '04', name: '反冲与火箭', en: 'ROCKET', blurb: '向后喷气向前飞',
+  accent: '#ffc56b', rgb: '255,197,107',
+  hint: '调节喷气速度与质量流量，看推力能否克服重力',
+  playable: true,
+  state: {t: 0, playing: true, u: 2400, q: 3, M0: 300, showJet: true},
+  reset() {
+    const s = this.state;
+    s.t = 0; s.playing = true; s.u = 2400; s.q = 3; s.M0 = 300; s.showJet = true;
+  },
+  meta() {
+    return {
+      title: '反冲：喷出的气体带走了动量',
+      desc: '火箭向下高速喷出燃气，燃气获得向下的动量，火箭就获得等大向上的动量。喷气速度越大、每秒喷出的质量越多，推力越大；推力小于重力时火箭只能停在发射台上。',
+      formula: 'F = u·q = u·Δm/Δt，M a = F − Mg',
+      note: '真空中没有空气可"蹬"，火箭依然能加速，靠的是<b>动量守恒</b>而不是空气的反作用力。'
+    };
+  },
+  thrust() { return this.state.u * this.state.q; },
+  acc() {
+    const s = this.state;
+    return Math.max(0, this.thrust() / s.M0 - 9.8);
+  },
+  hAt(t) { return .5 * this.acc() * t * t; },
+  draw(dt) {
+    const s = this.state;
+    if (s.playing) { s.t += dt * 1.4; if (s.t > 2.5) s.t = 0; }
+    setFrame(.5, .55, 14);
+    base();
+
+    const g = -1.95;
+    ground(g, 'rgba(150,190,205,.5)');
+    rect({x: -.85, y: g - .28}, {x: .85, y: g + .05}, 'rgba(120,140,160,.18)', 'rgba(170,200,215,.5)', {w: 1.2});
+    sans('发射台', X(.95), Y(g - .05), 'rgba(160,190,205,.55)', 10, 'left');
+
+    const SC = 1 / 20;
+    const h = Math.min(4.1, this.hAt(s.t) * SC);
+    const ry = g + .35 + h;
+    const v = this.acc() * s.t;
+
+    /* 尾焰 */
+    if (s.showJet && s.t > 0) {
+      const jet = clamp(this.thrust() / 9000, .15, 1);
+      for (let k = 0; k < 12; k++) {
+        const ph = ((s.t * 2.6 + k * .137) % 1);
+        const yy = ry - .55 - ph * (.55 + jet * .6);
+        const xx = Math.sin(k * 2.4 + s.t * 7) * .16 * ph * jet;
+        circleAt({x: xx, y: yy}, .05 + .06 * (1 - ph), 'rgba(255,190,110,' + (0.5 * (1 - ph)).toFixed(2) + ')', null, {w: 0});
+      }
+      const flame = .5 + jet * .55;
+      poly([{x: -.34, y: ry - .5}, {x: .34, y: ry - .5}, {x: 0, y: ry - .5 - flame}],
+        'rgba(255,150,80,.28)', 'rgba(255,190,120,.9)', {w: 1.4});
+      sans('燃气 u = ' + String(s.u) + ' m/s', X(1.15), Y(ry - .75), 'rgba(255,196,140,.85)', 10.5, 'left');
+      arrow({x: .62, y: ry - .55}, {x: .62, y: ry - 1.15}, 'rgba(255,196,140,.75)', {w: 2, head: 9});
+    }
+
+    /* 箭体 */
+    poly([{x: -.42, y: ry - .5}, {x: .42, y: ry - .5}, {x: .42, y: ry + .7}, {x: 0, y: ry + 1.05}, {x: -.42, y: ry + .7}],
+      'rgba(24,36,50,.95)', '#ffc56b', {w: 1.8});
+    circleAt({x: 0, y: ry + .35}, .16, 'rgba(120,200,255,.5)', 'rgba(180,225,255,.9)', {w: 1.2});
+    if (v > .1) {
+      arrow({x: .62, y: ry + .2}, {x: .62, y: ry + .2 + clamp(v * .045, .3, 2.2)}, '#5eead4', {w: 2.6, head: 11});
+      sans('v = ' + f1(v) + ' m/s', X(1.0), Y(ry + .9 + clamp(v * .022, .1, 1)), '#8fe9d8', 11, 'left');
+    }
+
+    /* 数据板 */
+    const F = this.thrust(), W = s.M0 * 9.8;
+    sans('推力 F = u·q = ' + f1(F) + ' N', X(-6.4), Y(4.1), '#ffd79a', 12.5, 'left');
+    sans('重力 Mg = ' + f1(W) + ' N', X(-6.4), Y(3.45), 'rgba(190,215,225,.85)', 12, 'left');
+    sans(F > W ? '推力大于重力，火箭加速上升' : '推力不足，火箭停在台上',
+      X(-6.4), Y(2.8), F > W ? 'rgba(143,233,216,.9)' : 'rgba(255,160,170,.9)', 11.5, 'left');
+    if (F > W) {
+      const barW = clamp(F / 13000, 0, 1) * 3.2;
+      rect({x: -6.3, y: 1.5}, {x: -6.3 + barW, y: 1.8}, 'rgba(255,197,107,.28)', 'rgba(255,197,107,.8)', {w: 1});
+      rect({x: -6.3, y: .95}, {x: -6.3 + clamp(W / 13000, 0, 1) * 3.2, y: 1.25}, 'rgba(108,182,255,.22)', 'rgba(108,182,255,.7)', {w: 1});
+      sans('推力', X(-6.4), Y(1.65), 'rgba(255,215,154,.8)', 10, 'right');
+      sans('重力', X(-6.4), Y(1.1), 'rgba(158,203,255,.8)', 10, 'right');
+    }
+    sans('高度 h = ' + f1(this.hAt(s.t)) + ' m', X(6.4), Y(2.6), 'rgba(180,210,220,.75)', 11, 'right');
+
+    /* 高度标尺：每格 20 m */
+    line({x: 3.15, y: g + .35}, {x: 3.15, y: g + 4.3}, 'rgba(255,255,255,.18)', {w: 1});
+    for (let k = 0; k <= 4; k++) {
+      const yk = g + .35 + k;
+      line({x: 3.15, y: yk}, {x: 3.55, y: yk}, 'rgba(255,255,255,.25)', {w: 1});
+      if (k) sans(String(k * 20), X(3.65), Y(yk), 'rgba(170,200,215,.6)', 9.5, 'left');
+    }
+    sans('m', X(3.65), Y(g + 4.3), 'rgba(170,200,215,.6)', 9.5, 'left');
+  },
+  hud() {
+    const s = this.state, F = this.thrust();
+    return [
+      {k: '推力 F', v: f1(F) + ' N', hi: true},
+      {k: '加速度 a', v: f1(this.acc()) + ' m/s²', hi: true},
+      {k: '速度 v', v: f1(this.acc() * s.t) + ' m/s'},
+      {k: '高度 h', v: f1(this.hAt(s.t)) + ' m'},
+      {k: '每秒喷气', v: f1(s.q) + ' kg/s'}
+    ];
+  },
+  panel(el) {
+    const s = this.state;
+    addSlider(el, '喷气速度 u / (m/s)', 800, 2600, 50, s.u, v => String(Math.round(v)), v => s.u = v);
+    addSlider(el, '质量流量 q / (kg/s)', 1, 4, .5, s.q, v => f1(v), v => s.q = v);
+    addSlider(el, '火箭质量 M / kg', 250, 700, 10, s.M0, v => String(Math.round(v)), v => s.M0 = v);
+    addToggle(el, '显示燃气喷流', s.showJet, v => s.showJet = v);
+    addBtn(el, '重新点火', () => { s.t = 0; }, 'ghost');
+  },
+  togglePlay() { this.state.playing = !this.state.playing; },
+  playLabel() { return this.state.playing ? '⏸ 暂停' : '▶ 播放'; }
+});
+
+/* ---------- 05 人船模型 ---------- */
+MODULES.push({
+  key: 'boat', tab: '05', name: '人船模型', en: 'MAN & BOAT', blurb: '质心一动不动',
+  accent: '#5eead4', rgb: '94,234,212',
+  hint: '让人在船上走一个来回，盯住水面上那条质心竖线',
+  playable: true,
+  state: {p: 0, dir: 1, playing: true, mp: 60, mb: 150, L: 3.4, showCM: true},
+  reset() {
+    const s = this.state;
+    s.p = 0; s.dir = 1; s.playing = true; s.mp = 60; s.mb = 150; s.L = 3.4; s.showCM = true;
+  },
+  meta() {
+    return {
+      title: '人走船退，系统质心不动',
+      desc: '人站在船尾向船头走，船同时向后退。水平方向系统不受外力，总动量为零，质心位置保持不变。人质量越大、船越轻，船后退得越多；两者的位移与质量成反比。',
+      formula: 'm s<sub>人</sub> = M s<sub>船</sub>，s<sub>人</sub> + s<sub>船</sub> = L',
+      note: '用<b>质心不动</b>判断位移最方便：人相对船走 L，人实际前进 ML/(M+m)，船后退 mL/(M+m)。'
+    };
+  },
+  Lrel() { return Math.max(.8, this.state.L - .9); },
+  s1() { const s = this.state; return s.mb * this.Lrel() / (s.mp + s.mb); },
+  s2() { const s = this.state; return -s.mp * this.Lrel() / (s.mp + s.mb); },
+  xb0() { return .5; },
+  cm() { const s = this.state; return (s.mp * (this.xb0() - this.Lrel() / 2) + s.mb * this.xb0()) / (s.mp + s.mb); },
+  draw(dt) {
+    const s = this.state;
+    if (s.playing) {
+      s.p += dt * .2 * s.dir;
+      if (s.p > 1) { s.p = 1; s.dir = -1; }
+      if (s.p < 0) { s.p = 0; s.dir = 1; }
+    }
+    setFrame(.5, .55, 15);
+    base();
+
+    const xb = this.xb0() + this.s2() * s.p;
+    const xp = this.xb0() - this.Lrel() / 2 + this.s1() * s.p;
+    const wl = -1.55;
+
+    /* 水面 */
+    for (let k = -7; k <= 7; k += .7) {
+      line({x: k, y: wl}, {x: k + .34, y: wl + .06}, 'rgba(108,182,255,.28)', {w: 1.2});
+    }
+    line({x: -7.4, y: wl}, {x: 7.4, y: wl}, 'rgba(108,182,255,.22)', {w: 1});
+
+    /* 码头 */
+    rect({x: -7.2, y: wl - .55}, {x: -6.0, y: wl - .05}, 'rgba(120,140,160,.15)', 'rgba(170,200,215,.4)', {w: 1});
+    sans('码头', X(-6.6), Y(wl - .85), 'rgba(160,190,205,.55)', 10);
+
+    /* 船 */
+    const b = s.L / 2;
+    poly([{x: xb - b, y: wl + .38}, {x: xb + b, y: wl + .38},
+      {x: xb + b * .82, y: wl - .42}, {x: xb - b * .82, y: wl - .42}],
+      'rgba(30,50,66,.92)', '#5eead4', {w: 1.8});
+
+    /* 人 */
+    const py = wl + .38;
+    circleAt({x: xp, y: py + 1.66}, .22, 'rgba(255,197,107,.85)', '#ffd79a', {w: 1.4});
+    line({x: xp, y: py + 1.44}, {x: xp, y: py + .6}, 'rgba(255,197,107,.85)', {w: 3});
+    line({x: xp - .28, y: py + .02}, {x: xp, y: py + .6}, 'rgba(255,197,107,.7)', {w: 2.4});
+    line({x: xp + .28, y: py + .02}, {x: xp, y: py + .6}, 'rgba(255,197,107,.7)', {w: 2.4});
+    line({x: xp - .26, y: py + 1.16}, {x: xp + .26, y: py + 1.16}, 'rgba(255,197,107,.8)', {w: 2.4});
+    arrow({x: xp + .42, y: py + 1.66}, {x: xp + .42 + .7 * s.dir, y: py + 1.66}, 'rgba(255,215,154,.85)', {w: 2, head: 9});
+    sans(f1(s.mp) + ' kg', X(xp), Y(py + 2.2), '#ffd79a', 10.5);
+    sans(f1(s.mb) + ' kg', X(xb), Y(wl - .85), '#8fe9d8', 10.5);
+
+    /* 位移标注 */
+    const sx0 = this.xb0() - this.Lrel() / 2;
+    line({x: sx0, y: py + 2.55}, {x: sx0 + this.s1() * s.p, y: py + 2.55}, 'rgba(255,197,107,.55)', {w: 1.4, dash: [5, 4]});
+    arrow({x: sx0, y: py + 2.55}, {x: sx0 + this.s1() * s.p, y: py + 2.55}, '#ffc56b', {w: 1.6, head: 9});
+    sans('人 ' + f1(this.s1() * s.p) + ' m', X(sx0 + this.s1() * s.p / 2), Y(py + 2.85), 'rgba(255,215,154,.9)', 10.5);
+
+    const bx0 = this.xb0();
+    arrow({x: bx0, y: wl - .95}, {x: bx0 + this.s2() * s.p, y: wl - .95}, '#5eead4', {w: 1.6, head: 9});
+    sans('船 ' + f1(Math.abs(this.s2() * s.p)) + ' m', X(bx0 + this.s2() * s.p / 2), Y(wl - 1.25), 'rgba(143,233,216,.9)', 10.5);
+
+    if (s.showCM) {
+      const cm = this.cm();
+      line({x: cm, y: -2.75}, {x: cm, y: 2.6}, 'rgba(255,255,255,.28)', {w: 1.2, dash: [6, 5]});
+      dot({x: cm, y: 1.9}, '#ffffff', 4);
+      sans('系统质心（不动）', X(cm), Y(2.25), 'rgba(230,240,245,.85)', 10.5);
+    }
+  },
+  hud() {
+    const s = this.state;
+    return [
+      {k: '人的位移', v: f1(this.s1() * s.p) + ' m', hi: true},
+      {k: '船的位移', v: f1(Math.abs(this.s2() * s.p)) + ' m', hi: true},
+      {k: '人的质量', v: f1(s.mp) + ' kg'},
+      {k: '船的质量', v: f1(s.mb) + ' kg'},
+      {k: '质心位移', v: '0.0 m'}
+    ];
+  },
+  panel(el) {
+    const s = this.state;
+    addSlider(el, '人的质量 m / kg', 40, 90, 1, s.mp, v => String(Math.round(v)), v => s.mp = v);
+    addSlider(el, '船的质量 M / kg', 80, 280, 5, s.mb, v => String(Math.round(v)), v => s.mb = v);
+    addSlider(el, '船长 L / m', 2.4, 5, .1, s.L, v => f1(v), v => s.L = v);
+    addToggle(el, '显示质心位置', s.showCM, v => s.showCM = v);
+    addBtn(el, '人回到船尾', () => { s.p = 0; s.dir = 1; }, 'ghost');
+  },
+  togglePlay() { this.state.playing = !this.state.playing; },
+  playLabel() { return this.state.playing ? '⏸ 暂停' : '▶ 播放'; }
+});
+
+})();
+
+
+/* ============================================================
+   引擎
+   ============================================================ */
+const chapterListEl = $('#chapterList');
+const catalogEl = $('#catalogTrack');
+let curIdx = 0, cur = null, hoverId = null, dragId = null, orbitId = null, orbitLast = null;
+
+MODULES.forEach((m, i) => {
+  m.en = m.en || '';
+  m.blurb = m.blurb || '';
+
+  const b = document.createElement('button');
+  b.type = 'button';
+  b.className = 'chapter-item';
+  b.style.setProperty('--tc', m.accent);
+  b.style.setProperty('--tc-rgb', m.rgb);
+  b.innerHTML = '<span class="ci-num">' + m.tab + '</span>' +
+    '<span class="ci-name">' + m.name + '</span>' +
+    '<span class="ci-en">' + m.en + '</span>';
+  b.addEventListener('click', () => activate(i));
+  chapterListEl.appendChild(b);
+
+  const c = document.createElement('button');
+  c.type = 'button';
+  c.className = 'catalog-card';
+  c.style.setProperty('--tc', m.accent);
+  c.style.setProperty('--tc-rgb', m.rgb);
+  c.innerHTML = '<span class="cc-top"><b>' + m.tab + '</b><span>' + m.en + '</span></span>' +
+    '<strong>' + m.name + '</strong><small>' + m.blurb + '</small>';
+  c.addEventListener('click', () => activate(i));
+  catalogEl.appendChild(c);
+});
+
+function plainFormula(html) {
+  return html.replace(/<br\s*\/?>/gi, ' ').replace(/<[^>]+>/g, '').replace(/\s+/g, ' ').trim();
+}
+function buildPanel() {
+  const m = cur.meta();
+  $('#title').textContent = m.title;
+  $('#desc').innerHTML = m.desc;
+  $('#formula').innerHTML = m.formula;
+  $('#note').innerHTML = m.note;
+  $('#stageFormula').textContent = plainFormula(m.formula);
+  $('#eqTag').textContent = cur.tab;
+  controlsEl.innerHTML = '';
+  cur.panel(controlsEl);
+}
+const decodeBox = document.createElement('div');
+function plainText(html) {
+  decodeBox.innerHTML = html;
+  return decodeBox.textContent;
+}
+function renderHud() {
+  if (!cur) return;
+  const rows = cur.hud();
+  hudEl.innerHTML = rows.map(r =>
+    '<div class="hud-item' + (r.hi ? ' hi' : '') + '"><span>' + r.k + '</span><b>' + r.v + '</b></div>'
+  ).join('');
+  $('#stageValues').textContent = rows.slice(0, 4).map(r => plainText(r.k + ' ' + r.v)).join('   ·   ');
+}
+function syncPlayBtn() {
+  const play = $('#playBtn');
+  if (!cur) { play.hidden = true; return; }
+  const ok = cur.playable || typeof cur.togglePlay === 'function';
+  play.hidden = !ok;
+  if (!ok) return;
+  let txt = '▶ 播放';
+  if (typeof cur.playLabel === 'function') txt = cur.playLabel();
+  else if (cur.state && cur.state.playing) txt = '⏸ 暂停';
+  if (play.textContent !== txt) play.textContent = txt;
+}
+function activate(i) {
+  curIdx = i;
+  cur = MODULES[i];
+  root.style.setProperty('--accent', cur.accent);
+  root.style.setProperty('--accent-rgb', cur.rgb);
+  for (let j = 0; j < chapterListEl.children.length; j++) {
+    chapterListEl.children[j].classList.toggle('on', j === i);
+    catalogEl.children[j].classList.toggle('on', j === i);
+  }
+  cur.reset();
+  hoverId = null;
+  dragId = null;
+  orbitId = null;
+  orbitLast = null;
+  buildPanel();
+  const m = cur.meta();
+  $('#liveName').textContent = cur.name;
+  $('#liveIndex').textContent = cur.tab;
+  $('#defMark').textContent = cur.tab;
+  $('#topChip').innerHTML = '<span class="chip-dot"></span>第 ' + (i + 1) + ' / ' + MODULES.length + ' 节';
+  $('#hint').textContent = cur.hint + ' · ← → 切换';
+  syncPlayBtn();
+  renderHud();
+  cv.style.cursor = canOrbit() ? 'grab' : 'default';
+}
+
+function resize() {
+  const r = $('.stage-card').getBoundingClientRect();
+  if (r.width < 2 || r.height < 2) return;
+  W = r.width;
+  H = r.height;
+  DPR = Math.min(2, window.devicePixelRatio || 1);
+  cv.width = Math.round(W * DPR);
+  cv.height = Math.round(H * DPR);
+  ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
+}
+
+let last = performance.now(), lastHud = 0;
+function loop(now) {
+  const dt = Math.min(.05, (now - last) / 1000 || 0);
+  last = now;
+  if (cur && W > 0) {
+    ctx.clearRect(0, 0, W, H);
+    cur.draw(dt);
+    if (now - lastHud > 120) {
+      lastHud = now;
+      renderHud();
+      syncPlayBtn();
+    }
+  }
+  requestAnimationFrame(loop);
+}
+
+/* ---------- 指针交互 ---------- */
+function pointAt(e) {
+  const r = cv.getBoundingClientRect();
+  const sx = (e.clientX - r.left) * (W / r.width);
+  const sy = (e.clientY - r.top) * (H / r.height);
+  return {sx, sy, wx: (sx - V.ox) / V.k, wy: (V.oy - sy) / V.k};
+}
+function pick(e) {
+  if (!cur) return null;
+  const p = pointAt(e);
+  const hs = cur.handles() || [];
+  let best = null, bd = 22;
+  for (const h of hs) {
+    const d = Math.hypot(X(h.x) - p.sx, Y(h.y) - p.sy);
+    if (d < bd) { bd = d; best = h.id; }
+  }
+  return best;
+}
+function canOrbit() {
+  return !!(cur && typeof cur.orbit === 'function' && (!cur.orbitEnabled || cur.orbitEnabled()));
+}
+cv.addEventListener('pointerdown', e => {
+  if (!cur) return;
+  const id = pick(e);
+  if (id) {
+    dragId = id;
+    hoverId = id;
+    cv.setPointerCapture(e.pointerId);
+    cv.style.cursor = 'grabbing';
+    e.preventDefault();
+  } else if (canOrbit()) {
+    orbitId = e.pointerId;
+    orbitLast = {x: e.clientX, y: e.clientY};
+    cv.setPointerCapture(e.pointerId);
+    cv.style.cursor = 'grabbing';
+    e.preventDefault();
+  }
+});
+cv.addEventListener('pointermove', e => {
+  if (!cur) return;
+  if (dragId) {
+    const p = pointAt(e);
+    cur.drag(dragId, {x: p.wx, y: p.wy});
+    renderHud();
+  } else if (orbitId !== null) {
+    if (!canOrbit()) return;
+    const dx = e.clientX - orbitLast.x;
+    const dy = e.clientY - orbitLast.y;
+    orbitLast = {x: e.clientX, y: e.clientY};
+    cur.orbit(dx, dy);
+    renderHud();
+  } else {
+    const id = pick(e);
+    hoverId = id;
+    cv.style.cursor = (id || canOrbit()) ? 'grab' : 'default';
+  }
+});
+function endDrag() {
+  dragId = null;
+  orbitId = null;
+  orbitLast = null;
+  cv.style.cursor = canOrbit() ? 'grab' : 'default';
+}
+cv.addEventListener('pointerup', endDrag);
+cv.addEventListener('pointercancel', endDrag);
+cv.addEventListener('pointerleave', () => {
+  if (dragId || orbitId !== null) return;
+  hoverId = null;
+  cv.style.cursor = canOrbit() ? 'grab' : 'default';
+});
+
+/* ---------- 顶部操作 ---------- */
+$('#resetBtn').addEventListener('click', () => {
+  if (!cur) return;
+  cur.reset();
+  buildPanel();
+  renderHud();
+});
+$('#playBtn').addEventListener('click', () => { if (cur && cur.togglePlay) cur.togglePlay(); });
+$('#fullBtn').addEventListener('click', () => {
+  if (!document.fullscreenElement) {
+    if (root.requestFullscreen) root.requestFullscreen();
+  } else if (document.exitFullscreen) {
+    document.exitFullscreen();
+  }
+});
+
+/* ---------- 键盘 ---------- */
+window.addEventListener('keydown', e => {
+  if (e.target && /INPUT|TEXTAREA|SELECT/.test(e.target.tagName)) return;
+  if (e.key === 'ArrowRight') {
+    e.preventDefault();
+    activate((curIdx + 1) % MODULES.length);
+  } else if (e.key === 'ArrowLeft') {
+    e.preventDefault();
+    activate((curIdx - 1 + MODULES.length) % MODULES.length);
+  } else if (e.code === 'Space') {
+    e.preventDefault();
+    if (cur && cur.togglePlay) cur.togglePlay();
+  }
+});
+
+if (window.ResizeObserver) new ResizeObserver(resize).observe($('.stage-card'));
+window.addEventListener('resize', resize);
+
+resize();
+activate(0);
+requestAnimationFrame(loop);
+</script>
+</body>
+</html>

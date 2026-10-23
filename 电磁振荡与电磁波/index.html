@@ -1,0 +1,1650 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#070a11">
+<meta name="description" content="电磁振荡与电磁波：LC 振荡电路、电磁波的产生与传播、电磁波谱、无线电波的发射与接收、电磁波的应用。">
+<title>电磁振荡与电磁波 · 动态教学实验室</title>
+<style>
+/* ============================================================
+   高中物理 · Physics Lab
+   ============================================================ */
+:root{
+  --bg:#060a12;
+  --text:#eef7f6;
+  --text-soft:#c3d5dc;
+  --muted:#8ba1ac;
+  --muted-2:#6f858f;
+  --line:rgba(165,200,220,.11);
+  --line-strong:rgba(165,200,220,.2);
+  --accent:#5eead4;
+  --accent-rgb:94,234,212;
+  --sans:"PingFang SC","Microsoft YaHei","Noto Sans SC","Source Han Sans SC",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --serif:"Cambria Math","STIX Two Math","Latin Modern Math","Times New Roman","Songti SC",serif;
+  --mono:"Cascadia Code","SFMono-Regular","JetBrains Mono",Consolas,monospace;
+  --radius:18px;
+  --shadow:0 24px 60px rgba(0,0,0,.3);
+}
+*{box-sizing:border-box}
+html,body{height:100%;margin:0}
+button:focus-visible,a:focus-visible,input:focus-visible{outline:2px solid rgba(var(--accent-rgb),.85);outline-offset:2px}
+body{
+  background:var(--bg);color:var(--text);font-family:var(--sans);
+  overflow:hidden;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;
+}
+button{font:inherit;color:inherit}
+::selection{background:rgba(var(--accent-rgb),.24);color:#fff}
+[hidden]{display:none!important}
+
+/* ---------- atmosphere ---------- */
+.ambient{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden;background:
+  radial-gradient(ellipse 70% 60% at 50% -12%,rgba(43,92,122,.2),transparent 64%),
+  linear-gradient(180deg,#08101c 0%,#05090f 100%);}
+.ambient::after{
+  content:"";position:absolute;inset:0;
+  background-image:
+    linear-gradient(rgba(180,215,235,.028) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(180,215,235,.028) 1px,transparent 1px);
+  background-size:70px 70px;
+  -webkit-mask-image:radial-gradient(ellipse 78% 68% at 46% 34%,#000 8%,transparent 78%);
+  mask-image:radial-gradient(ellipse 78% 68% at 46% 34%,#000 8%,transparent 78%);
+}
+.glow{position:absolute;border-radius:50%;filter:blur(90px);pointer-events:none}
+.glow-a{width:540px;height:540px;left:-140px;top:-220px;background:rgba(var(--accent-rgb),.1)}
+.glow-b{width:640px;height:640px;right:-220px;bottom:-300px;background:rgba(104,86,210,.08)}
+
+/* ---------- app ---------- */
+.app{position:relative;z-index:1;height:100vh;height:100dvh;min-height:660px;display:flex;flex-direction:column}
+
+/* ---------- topbar ---------- */
+.topbar{flex:0 0 74px;display:flex;align-items:center;justify-content:space-between;gap:18px;padding:0 20px}
+.brand{display:flex;align-items:center;gap:12px;min-width:0}
+.brand-mark{
+  width:42px;height:42px;border-radius:12px;flex:none;display:grid;place-items:center;
+  border:1px solid rgba(var(--accent-rgb),.3);
+  background:linear-gradient(140deg,rgba(var(--accent-rgb),.18),rgba(var(--accent-rgb),.02));
+  box-shadow:0 0 28px rgba(var(--accent-rgb),.14),inset 0 0 18px rgba(var(--accent-rgb),.05);
+  transition:border-color .4s,box-shadow .4s;
+}
+.brand-mark svg{width:30px;height:30px;display:block}
+.brand-copy{min-width:0}
+.eyebrow{display:flex;align-items:center;gap:7px;font-size:8px;letter-spacing:.2em;color:var(--muted);text-transform:uppercase;white-space:nowrap}
+.eyebrow i{width:13px;height:1px;background:rgba(255,255,255,.18);flex:none}
+.brand h1{margin:3px 0 0;font-size:15px;font-weight:600;letter-spacing:.06em;white-space:nowrap}
+.title-en{font-size:.64em;color:var(--muted);font-weight:400;letter-spacing:.14em}
+.top-actions{display:flex;align-items:center;gap:8px;flex:none}
+.status-chip{
+  display:flex;align-items:center;gap:7px;padding:7px 11px;border-radius:999px;
+  border:1px solid var(--line);background:rgba(255,255,255,.03);
+  font-size:10px;color:var(--text-soft);white-space:nowrap;letter-spacing:.04em;
+}
+.chip-dot{width:5px;height:5px;border-radius:50%;background:var(--accent);box-shadow:0 0 9px var(--accent);flex:none}
+.ghost-btn,.icon-btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:6px;
+  border:1px solid var(--line);background:rgba(255,255,255,.025);color:var(--text-soft);
+  border-radius:10px;padding:8px 12px;font-size:11px;cursor:pointer;
+  transition:background .18s,border-color .18s,color .18s,transform .18s;white-space:nowrap;
+}
+.ghost-btn:hover,.icon-btn:hover{background:rgba(255,255,255,.06);border-color:var(--line-strong);color:#fff}
+.ghost-btn:active,.icon-btn:active{transform:translateY(1px)}
+.ghost-btn svg{width:14px;height:14px}
+.icon-btn{width:36px;height:36px;padding:0}
+.icon-btn svg{width:16px;height:16px}
+
+/* ---------- workspace ---------- */
+.workspace{
+  flex:1;min-height:0;display:grid;gap:11px;padding:0 16px 15px;
+  grid-template-columns:minmax(248px,276px) minmax(0,1fr) minmax(298px,326px);
+  grid-template-rows:minmax(0,1fr) 146px;
+  grid-template-areas:"controls stage details" "catalog catalog catalog";
+}
+.panel,.stage-card,.catalog{
+  border:1px solid var(--line);
+  background:linear-gradient(180deg,rgba(16,27,45,.9),rgba(8,15,27,.93));
+  box-shadow:var(--shadow),inset 0 1px 0 rgba(255,255,255,.04);
+  backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);
+}
+.panel{min-height:0;border-radius:var(--radius);overflow-y:auto;scrollbar-width:thin;scrollbar-color:rgba(255,255,255,.12) transparent}
+.panel::-webkit-scrollbar{width:5px}
+.panel::-webkit-scrollbar-thumb{background:rgba(255,255,255,.12);border-radius:99px}
+.panel-controls{grid-area:controls;padding:15px 14px 14px;display:flex;flex-direction:column;gap:11px}
+.panel-details{grid-area:details;padding:15px 14px 14px;display:flex;flex-direction:column;gap:10px}
+.panel-controls>*,.panel-details>*{flex:0 0 auto}
+.panel-head{display:flex;align-items:flex-start;gap:9px;min-width:0}
+.section-num{
+  font-family:var(--mono);font-size:9.5px;letter-spacing:.04em;color:var(--accent);
+  border:1px solid rgba(var(--accent-rgb),.25);background:rgba(var(--accent-rgb),.07);
+  border-radius:7px;padding:4px 6px;line-height:1;margin-top:2px;flex:none;
+}
+.panel-head h2{margin:0;font-size:14.5px;font-weight:600;letter-spacing:.04em;line-height:1.35}
+.panel-head p{margin:2px 0 0;font-size:9.5px;color:var(--muted);letter-spacing:.03em}
+
+/* ---------- chapter nav ---------- */
+.chapter-list{display:flex;flex-direction:column;gap:2px}
+.chapter-item{
+  display:flex;align-items:center;gap:9px;min-width:0;padding:7px 9px;border-radius:9px;
+  border:1px solid transparent;background:transparent;color:var(--muted);
+  cursor:pointer;text-align:left;transition:background .16s,color .16s,border-color .16s;
+}
+.chapter-item:hover{background:rgba(255,255,255,.045);color:var(--text-soft)}
+.chapter-item.on{color:var(--tc);background:rgba(var(--tc-rgb),.09);border-color:rgba(var(--tc-rgb),.22)}
+.ci-num{font-family:var(--mono);font-size:9px;opacity:.65;width:17px;flex:none}
+.ci-name{font-size:12px;letter-spacing:.02em;white-space:nowrap;min-width:0;overflow:hidden;text-overflow:ellipsis}
+.ci-en{margin-left:auto;font-size:7px;letter-spacing:.13em;opacity:.4;white-space:nowrap}
+.chapter-item.on .ci-en{opacity:.65}
+
+.block-label{
+  display:flex;align-items:baseline;justify-content:space-between;gap:8px;
+  padding-top:10px;border-top:1px solid var(--line);
+  font-size:8.5px;letter-spacing:.13em;color:var(--muted);text-transform:uppercase;
+}
+.block-label span:last-child{font-size:8px;letter-spacing:.04em;color:var(--muted-2);text-transform:none}
+
+/* ---------- controls ---------- */
+.controls{display:flex;flex-direction:column;gap:9px}
+.ctrl{display:flex;flex-direction:column;gap:6px}
+.ctrl-top{display:flex;align-items:baseline;justify-content:space-between;gap:10px;font-size:10.5px;color:var(--muted);letter-spacing:.02em}
+.ctrl-top b{font-family:var(--mono);font-size:10.5px;font-weight:500;color:var(--accent)}
+input[type=range]{
+  -webkit-appearance:none;appearance:none;width:100%;height:3px;border-radius:99px;margin:5px 0;
+  background:linear-gradient(90deg,rgba(var(--accent-rgb),.72),rgba(var(--accent-rgb),.12));
+  outline:none;cursor:pointer;
+}
+input[type=range]::-webkit-slider-thumb{
+  -webkit-appearance:none;width:13px;height:13px;border-radius:50%;
+  background:#0b1220;border:2px solid var(--accent);cursor:grab;
+  box-shadow:0 0 12px rgba(var(--accent-rgb),.55);
+}
+input[type=range]::-moz-range-thumb{
+  width:11px;height:11px;border-radius:50%;background:#0b1220;border:2px solid var(--accent);
+  box-shadow:0 0 12px rgba(var(--accent-rgb),.55);
+}
+.switch{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:5px 0;font-size:11px;color:var(--text-soft);cursor:pointer;position:relative}
+.switch > span{flex:1;line-height:1.45}
+.switch input{position:absolute;opacity:0;width:0;height:0;pointer-events:none}
+.switch i{width:32px;height:18px;border-radius:99px;background:rgba(255,255,255,.09);border:1px solid rgba(255,255,255,.07);position:relative;flex:none;transition:.2s}
+.switch i::after{content:"";position:absolute;top:2px;left:2px;width:12px;height:12px;border-radius:50%;background:#93a8b2;transition:.2s}
+.switch input:checked + i{background:rgba(var(--accent-rgb),.3);border-color:rgba(var(--accent-rgb),.35)}
+.switch input:checked + i::after{transform:translateX(14px);background:var(--accent);box-shadow:0 0 8px rgba(var(--accent-rgb),.7)}
+.switch input:focus-visible + i{outline:2px solid rgba(var(--accent-rgb),.8);outline-offset:3px}
+.row{display:flex;gap:6px;flex-wrap:wrap}
+.btn{
+  flex:1;min-width:84px;padding:8px 9px;border-radius:8px;cursor:pointer;
+  border:1px solid rgba(var(--accent-rgb),.28);background:rgba(var(--accent-rgb),.08);
+  color:var(--accent);font-size:10.5px;letter-spacing:.02em;transition:.18s;
+}
+.btn:hover{background:rgba(var(--accent-rgb),.16);border-color:rgba(var(--accent-rgb),.45)}
+.btn:active{transform:translateY(1px)}
+.btn.ghost{border-color:var(--line);background:rgba(255,255,255,.03);color:var(--muted)}
+.btn.ghost:hover{color:var(--text-soft);border-color:var(--line-strong);background:rgba(255,255,255,.06)}
+.seg{display:grid;grid-template-columns:repeat(3,1fr);gap:3px;padding:3px;border-radius:10px;background:rgba(255,255,255,.04);border:1px solid var(--line)}
+.seg button{padding:6px 3px;border-radius:7px;border:1px solid transparent;background:transparent;color:var(--muted);font-size:10px;cursor:pointer;transition:.18s;white-space:nowrap}
+.seg button:hover{color:var(--text-soft)}
+.seg button.on{background:rgba(var(--accent-rgb),.14);border-color:rgba(var(--accent-rgb),.26);color:var(--accent)}
+
+/* ---------- stage ---------- */
+.stage-card{
+  grid-area:stage;position:relative;min-height:0;border-radius:var(--radius);overflow:hidden;isolation:isolate;
+  background:
+    radial-gradient(ellipse 70% 64% at 52% 42%,rgba(var(--accent-rgb),.06),transparent 68%),
+    radial-gradient(ellipse 55% 55% at 60% 108%,rgba(73,60,122,.1),transparent 72%),
+    linear-gradient(180deg,#091321 0%,#060d17 100%);
+}
+.stage-card::before{
+  content:"";position:absolute;inset:0;z-index:1;pointer-events:none;
+  background-image:radial-gradient(rgba(190,225,238,.1) .7px,transparent .8px);
+  background-size:26px 26px;opacity:.28;
+  -webkit-mask-image:radial-gradient(ellipse 72% 72% at 50% 44%,#000,transparent 76%);
+  mask-image:radial-gradient(ellipse 72% 72% at 50% 44%,#000,transparent 76%);
+}
+.stage-card::after{
+  content:"";position:absolute;inset:0;z-index:5;pointer-events:none;border-radius:inherit;
+  box-shadow:inset 0 0 90px rgba(0,0,0,.28),inset 0 1px 0 rgba(255,255,255,.04);
+}
+#cv{position:absolute;inset:0;width:100%;height:100%;display:block;z-index:2;touch-action:none;cursor:default}
+
+.stage-top{position:absolute;z-index:7;top:13px;left:14px;right:14px;display:flex;justify-content:space-between;align-items:flex-start;gap:10px;pointer-events:none}
+.live-badge{
+  display:flex;align-items:center;gap:9px;padding:7px 10px;border-radius:11px;
+  background:rgba(5,11,20,.7);border:1px solid rgba(201,232,242,.1);
+  backdrop-filter:blur(14px);box-shadow:0 10px 30px rgba(0,0,0,.16);
+}
+.live-dot{width:7px;height:7px;border-radius:50%;background:var(--accent);box-shadow:0 0 13px rgba(var(--accent-rgb),.8);flex:none}
+.live-copy{display:flex;flex-direction:column;gap:3px}
+.live-copy strong{line-height:1.15}
+.live-copy span{font-size:7.5px;color:var(--muted);letter-spacing:.12em}
+.live-copy strong{font-size:12.5px;font-weight:600;letter-spacing:.04em;white-space:nowrap}
+.live-idx{
+  font-family:var(--mono);font-size:8.5px;color:var(--accent);
+  background:rgba(var(--accent-rgb),.09);border:1px solid rgba(var(--accent-rgb),.18);
+  border-radius:999px;padding:3px 6px;white-space:nowrap;
+}
+.stage-tools{display:flex;gap:6px;pointer-events:auto}
+.mini-btn{
+  display:inline-flex;align-items:center;gap:5px;padding:7px 10px;border-radius:9px;
+  font-size:10px;color:var(--text-soft);cursor:pointer;
+  border:1px solid rgba(201,236,228,.12);background:rgba(5,11,20,.62);
+  backdrop-filter:blur(12px);transition:.18s;
+}
+.mini-btn:hover{background:rgba(14,28,44,.85);border-color:rgba(var(--accent-rgb),.3);color:#fff}
+.stage-note{
+  position:absolute;z-index:6;left:16px;bottom:86px;max-width:70%;
+  font-family:var(--mono);font-size:8px;letter-spacing:.05em;
+  color:rgba(170,200,212,.5);pointer-events:none;
+}
+.definition-bar{
+  position:absolute;z-index:7;left:13px;right:13px;bottom:13px;
+  display:flex;align-items:center;gap:11px;min-height:58px;padding:8px 11px;
+  border:1px solid rgba(200,232,242,.11);border-radius:13px;
+  background:rgba(5,12,21,.8);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);
+  box-shadow:0 16px 40px rgba(0,0,0,.2);
+}
+.definition-mark{
+  width:34px;height:34px;border-radius:9px;display:grid;place-items:center;flex:none;
+  color:var(--accent);border:1px solid rgba(var(--accent-rgb),.26);background:rgba(var(--accent-rgb),.08);
+  font-family:var(--mono);font-size:9.5px;letter-spacing:.02em;
+}
+.definition-copy{flex:1;min-width:0;display:flex;flex-direction:column;gap:1px}
+.def-title{font-size:7px;letter-spacing:.14em;color:var(--muted)}
+.def-formula{font-family:var(--serif);font-size:14px;line-height:1.35;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.def-values{font-family:var(--mono);font-size:8.5px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+
+/* ---------- details ---------- */
+.concept h3{margin:0;font-size:15.5px;line-height:1.45;font-weight:600;letter-spacing:.01em}
+.concept .desc{margin:5px 0 0;font-size:11px;line-height:1.72;color:var(--text-soft)}
+.desc b,.note-card b{color:#fff;font-weight:500}
+.equation-card{
+  border:1px solid rgba(var(--accent-rgb),.2);border-radius:13px;padding:9px 11px 7px;
+  background:radial-gradient(ellipse 100% 120% at 0% 0%,rgba(var(--accent-rgb),.08),transparent 58%),rgba(0,0,0,.16);
+}
+.eq-head{display:flex;justify-content:space-between;align-items:center;gap:8px;font-size:8px;letter-spacing:.08em;color:var(--muted)}
+.eq-head span:last-child{font-family:var(--mono);font-size:8px;color:var(--accent)}
+.formula{
+  font-family:var(--serif);font-size:17px;line-height:1.45;text-align:center;color:#fff;
+  padding:7px 2px 6px;letter-spacing:.01em;text-shadow:0 0 20px rgba(var(--accent-rgb),.24);
+  overflow-wrap:anywhere;
+}
+.formula sub,.formula sup{font-size:.6em}
+.metric-grid{display:grid;grid-template-columns:1fr 1fr;gap:5px}
+.hud-item{
+  display:flex;flex-direction:column;gap:2px;min-width:0;
+  padding:7px 9px;border-radius:9px;border:1px solid var(--line);
+  background:rgba(255,255,255,.025);
+}
+.hud-item span{font-size:8px;color:var(--muted);letter-spacing:.05em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hud-item b{font-family:var(--mono);font-size:11px;font-weight:500;color:var(--text-soft);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hud-item.hi{border-color:rgba(var(--accent-rgb),.26);background:rgba(var(--accent-rgb),.07)}
+.hud-item.hi b{color:var(--accent)}
+.note-card{
+  margin-top:auto;
+  border:1px solid var(--line);border-radius:12px;padding:9px 11px;
+  background:rgba(255,255,255,.025);
+}
+.tip-card{
+  margin-top:auto;border:1px solid var(--line);border-radius:11px;padding:9px 11px;
+  background:rgba(255,255,255,.02);
+}
+.tip-card span{display:block;font-size:7.5px;letter-spacing:.13em;color:var(--muted-2);text-transform:uppercase;margin-bottom:3px}
+.tip-card p{margin:0;font-size:9.5px;line-height:1.7;color:var(--muted)}
+.metric-grid .hud-item:last-child:nth-child(odd){grid-column:1/-1}
+.note-head{display:flex;align-items:center;gap:6px;font-size:8px;letter-spacing:.1em;color:var(--text-soft);text-transform:uppercase;margin-bottom:3px}
+.note-icon{
+  width:15px;height:15px;border-radius:50%;display:grid;place-items:center;
+  border:1px solid rgba(var(--accent-rgb),.3);color:var(--accent);
+  font-family:var(--serif);font-size:9px;line-height:1;
+}
+.note-card p{margin:0;font-size:10px;line-height:1.7;color:var(--muted)}
+.note-card i{font-family:var(--serif);font-style:italic;color:var(--text-soft)}
+.nw{white-space:nowrap}
+
+/* ---------- catalog ---------- */
+.catalog{
+  grid-area:catalog;min-width:0;border-radius:var(--radius);
+  padding:11px 15px 9px;display:flex;flex-direction:column;gap:7px;
+}
+.catalog-head{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.catalog-title{display:flex;align-items:flex-start;gap:9px;min-width:0}
+.catalog-head h2{margin:0;font-size:13.5px;font-weight:600;letter-spacing:.04em;line-height:1.35}
+.catalog-head p{margin:1px 0 0;font-size:9px;color:var(--muted);letter-spacing:.03em}
+.catalog-hint{font-size:8px;letter-spacing:.05em;color:var(--muted-2);white-space:nowrap;font-family:var(--mono)}
+.catalog-track{
+  display:flex;gap:6px;min-height:0;overflow-x:auto;overflow-y:hidden;
+  padding-bottom:2px;scrollbar-width:thin;scrollbar-color:rgba(255,255,255,.12) transparent;
+}
+.catalog-track::-webkit-scrollbar{height:4px}
+.catalog-track::-webkit-scrollbar-thumb{background:rgba(255,255,255,.12);border-radius:99px}
+.catalog-card{
+  flex:1 1 0;min-width:126px;display:flex;flex-direction:column;gap:1px;
+  padding:7px 10px 6px;border-radius:10px;border:1px solid var(--line);
+  background:rgba(255,255,255,.025);color:var(--text-soft);cursor:pointer;text-align:left;
+  transition:background .16s,border-color .16s,box-shadow .16s;
+}
+.catalog-card:hover{background:rgba(255,255,255,.055);border-color:rgba(255,255,255,.17)}
+.catalog-card.on{border-color:rgba(var(--tc-rgb),.35);background:rgba(var(--tc-rgb),.08);box-shadow:inset 0 0 20px rgba(var(--tc-rgb),.05)}
+.cc-top{display:flex;justify-content:space-between;align-items:baseline;gap:6px;font-family:var(--mono);font-size:7px;letter-spacing:.1em;color:var(--muted-2)}
+.cc-top b{font-weight:500;color:inherit}
+.catalog-card.on .cc-top{color:var(--tc)}
+.catalog-card strong{font-size:11px;font-weight:600;line-height:1.5;color:var(--text-soft);white-space:nowrap}
+.catalog-card.on strong{color:var(--tc)}
+.catalog-card small{font-size:8px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+
+/* ---------- responsive ---------- */
+@media(max-width:1240px){
+  .workspace{grid-template-columns:minmax(228px,246px) minmax(0,1fr) minmax(272px,296px);gap:10px}
+  .panel-controls,.panel-details{padding:13px 12px}
+  .brand h1{font-size:14px}
+}
+@media(max-width:1020px){
+  body{overflow:auto}
+  .app{height:auto;min-height:100vh;min-height:100dvh}
+  .topbar{flex:0 0 auto;flex-wrap:wrap;gap:10px;padding:10px 14px}
+  .brand{flex:1 1 100%}
+  .top-actions{width:100%;justify-content:flex-end}
+  .workspace{
+    flex:none;display:flex;flex-direction:column;gap:10px;padding:0 12px 16px;
+  }
+  .stage-card{order:1;height:min(62vh,560px);min-height:400px;flex:none}
+  .panel-controls{order:2;flex:none;overflow:visible}
+  .panel-details{order:3;flex:none;overflow:visible}
+  .catalog{order:4;flex:none;height:auto}
+  .chapter-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:3px}
+  .metric-grid{grid-template-columns:repeat(3,1fr)}
+  .catalog-track{flex-wrap:nowrap}
+  .catalog-card{flex:0 0 140px}
+}
+@media(max-width:620px){
+  .eyebrow,.title-en{display:none}
+  .status-chip{display:none}
+  .brand h1{font-size:14px}
+  .workspace{padding:0 9px 12px}
+  .stage-card{height:52vh;min-height:340px}
+  .stage-card .stage-note{display:none}
+  .definition-bar{left:10px;right:10px;bottom:10px;min-height:52px;padding:7px 9px}
+  .def-formula{font-size:12.5px}
+  .def-values{font-size:8px}
+  .definition-mark{width:29px;height:29px;font-size:8.5px}
+  .panel-controls,.panel-details{padding:12px 11px}
+  .metric-grid{grid-template-columns:1fr 1fr}
+  .catalog{padding:10px 11px 8px}
+  .catalog-hint{display:none}
+  .catalog-card{flex:0 0 132px}
+  .live-copy strong{font-size:11.5px}
+  .ci-en{display:none}
+}
+@media(min-width:1021px) and (max-height:740px){
+  .app{min-height:0}
+  .topbar{flex-basis:62px;padding:0 14px}
+  .workspace{grid-template-rows:minmax(0,1fr) 128px;gap:9px;padding:0 12px 12px}
+  .panel-controls,.panel-details{padding:11px 11px;gap:8px}
+  .catalog{padding:8px 12px 6px;gap:5px}
+  .catalog-card{padding:6px 8px 5px}
+  .catalog-card small{display:none}
+  .definition-bar{min-height:52px;padding:7px 9px}
+}
+@media(prefers-reduced-motion:reduce){
+  *{transition:none!important;animation:none!important}
+}
+</style>
+</head>
+<body>
+<div class="ambient" aria-hidden="true"><div class="glow glow-a"></div><div class="glow glow-b"></div></div>
+
+<div class="app">
+  <header class="topbar">
+    <div class="brand">
+      <div class="brand-mark" aria-hidden="true">
+        <svg viewBox="0 0 36 36" fill="none">
+          <circle cx="18" cy="18" r="3.4" fill="#69e5d0" opacity=".9"/>
+          <ellipse cx="18" cy="18" rx="13" ry="5.2" stroke="#ffc96b" stroke-width="1.2" opacity=".75" transform="rotate(-28 18 18)"/>
+          <ellipse cx="18" cy="18" rx="13" ry="5.2" stroke="#a99cff" stroke-width="1.2" opacity=".6" transform="rotate(32 18 18)"/>
+          <circle cx="28.6" cy="12.2" r="1.7" fill="#ffc96b"/>
+          <circle cx="8.4" cy="23.6" r="1.5" fill="#a99cff"/>
+        </svg>
+      </div>
+      <div class="brand-copy">
+        <div class="eyebrow"><span>EM Wave Lab</span><i></i><span>选择性必修第二册 · 第 4 章</span></div>
+        <h1>电磁振荡与电磁波 <span class="title-en">/ EM WAVES</span></h1>
+      </div>
+    </div>
+    <div class="top-actions">
+      <a class="ghost-btn" href="../index.html" title="返回总览" style="text-decoration:none">← 总览</a>
+      <div class="status-chip" id="topChip"><span class="chip-dot"></span>第 1 / 5 节</div>
+      <button class="ghost-btn" id="resetBtn" type="button" title="恢复本节初始状态">
+        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4.5 12a7.5 7.5 0 1 0 2.2-5.3M4.5 4.5V9H9" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        重置本节
+      </button>
+      <button class="icon-btn" id="fullBtn" type="button" aria-label="全屏显示" title="全屏显示">
+        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M8.5 4H4v4.5M15.5 4H20v4.5M8.5 20H4v-4.5M15.5 20H20v-4.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+    </div>
+  </header>
+
+  <main class="workspace">
+    <aside class="panel panel-controls" aria-label="情境与参数控制">
+      <div class="panel-head">
+        <span class="section-num">01</span>
+        <div><h2>情境与参数</h2><p>选择情境 · 调整变量</p></div>
+      </div>
+      <nav class="chapter-list" id="chapterList" aria-label="情境列表"></nav>
+      <div class="block-label"><span>本节控制 / Controls</span><span>拖动或调节</span></div>
+      <div class="controls" id="controls"></div>
+      <div class="tip-card">
+        <span>操作提示 / Tips</span>
+        <p>拖动画布彩色端点 · 调节滑块与开关 · ← → 切换情境 · 空格播放</p>
+      </div>
+    </aside>
+
+    <section class="stage-card" aria-label="课堂动态演示">
+      <canvas id="cv">你的浏览器需要支持 Canvas。</canvas>
+
+      <div class="stage-top">
+        <div class="live-badge">
+          <span class="live-dot"></span>
+          <div class="live-copy"><span>当前情境 / Scene</span><strong id="liveName">概念</strong></div>
+          <span class="live-idx" id="liveIndex">01</span>
+        </div>
+        <div class="stage-tools">
+          <button class="mini-btn" id="playBtn" type="button" hidden>▶ 播放</button>
+        </div>
+      </div>
+
+      <div class="stage-note" id="hint"></div>
+
+      <div class="definition-bar">
+        <div class="definition-mark" id="defMark">01</div>
+        <div class="definition-copy">
+          <div class="def-title">核心公式 / Key Formula</div>
+          <div class="def-formula" id="stageFormula"></div>
+          <div class="def-values" id="stageValues"></div>
+        </div>
+      </div>
+    </section>
+
+    <aside class="panel panel-details" aria-label="本节要点与实时数据">
+      <div class="panel-head">
+        <span class="section-num">02</span>
+        <div><h2>本节要点</h2><p>概念 · 公式 · 实时数据</p></div>
+      </div>
+      <div class="concept">
+        <h3 id="title"></h3>
+        <p class="desc" id="desc"></p>
+      </div>
+      <div class="equation-card">
+        <div class="eq-head"><span>公式 / Formula</span><span id="eqTag">01</span></div>
+        <div class="formula" id="formula"></div>
+      </div>
+      <div class="metric-grid" id="hud"></div>
+      <div class="note-card">
+        <div class="note-head"><span class="note-icon">i</span>观察提示</div>
+        <p id="note"></p>
+      </div>
+    </aside>
+
+    <section class="catalog" aria-label="情境图鉴">
+      <div class="catalog-head">
+        <div class="catalog-title">
+          <span class="section-num">03</span>
+          <div><h2>情境图鉴</h2><p>五个情境 · 点击切换</p></div>
+        </div>
+        <div class="catalog-hint">从振荡到电磁波</div>
+      </div>
+      <div class="catalog-track" id="catalogTrack"></div>
+    </section>
+  </main>
+</div>
+<script>
+'use strict';
+/* ============================================================
+   基础工具
+   ============================================================ */
+const $ = s => document.querySelector(s);
+const root = document.documentElement;
+const cv = $('#cv');
+const ctx = cv.getContext('2d');
+const hudEl = $('#hud');
+const controlsEl = $('#controls');
+const SERIF = '"Cambria Math","STIX Two Math","Times New Roman",serif';
+const SANS = '"PingFang SC","Microsoft YaHei","Noto Sans SC",system-ui,sans-serif';
+const TAU = Math.PI * 2;
+
+let W = 800, H = 600, DPR = 1;
+const V = {ox: 400, oy: 300, k: 60};
+const clamp = (v, a, b) => v < a ? a : v > b ? b : v;
+const lerp = (a, b, t) => a + (b - a) * t;
+const X = x => V.ox + x * V.k;
+const Y = y => V.oy - y * V.k;
+const fmt = (n, d = 2) => {
+  if (!isFinite(n)) return '—';
+  return (Math.abs(n) < 5e-3 ? 0 : n).toFixed(d).replace('-', '−');
+};
+const deg = r => { let d = r * 180 / Math.PI % 360; return d < 0 ? d + 360 : d; };
+const len2 = (x, y) => Math.hypot(x, y);
+const easeInOut = t => t < .5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2;
+
+function setFrame(cx, cy, span) {
+  V.k = Math.min(W / span, H / (span * .62));
+  V.ox = W * cx;
+  V.oy = H * cy;
+}
+function lim() {
+  return {
+    x0: -V.ox / V.k + .25,
+    x1: (W - V.ox) / V.k - .25,
+    y0: -(H - V.oy) / V.k + .25,
+    y1: V.oy / V.k - .25
+  };
+}
+function clampPt(p) {
+  const L = lim();
+  return {x: clamp(p.x, L.x0, L.x1), y: clamp(p.y, L.y0, L.y1)};
+}
+function base() {
+  const L = lim();
+  ctx.save();
+  ctx.lineWidth = 1;
+  for (let i = Math.ceil(L.x0); i <= Math.floor(L.x1); i++) {
+    ctx.strokeStyle = i === 0 ? 'rgba(170,205,220,.15)' : 'rgba(170,205,220,.045)';
+    ctx.beginPath(); ctx.moveTo(X(i), 0); ctx.lineTo(X(i), H); ctx.stroke();
+  }
+  for (let j = Math.ceil(L.y0); j <= Math.floor(L.y1); j++) {
+    ctx.strokeStyle = j === 0 ? 'rgba(170,205,220,.15)' : 'rgba(170,205,220,.045)';
+    ctx.beginPath(); ctx.moveTo(0, Y(j)); ctx.lineTo(W, Y(j)); ctx.stroke();
+  }
+  ctx.restore();
+}
+function tscale() { return clamp(V.k / 62, .84, 1.06); }
+function math(txt, x, y, color, size = 17, align = 'center', baseline = 'middle') {
+  size = Math.max(9, size * tscale());
+  ctx.save();
+  ctx.font = 'italic ' + size + 'px ' + SERIF;
+  ctx.fillStyle = color;
+  ctx.textAlign = align;
+  ctx.textBaseline = baseline;
+  ctx.lineJoin = 'round';
+  ctx.lineWidth = Math.max(2, size * .24);
+  ctx.strokeStyle = 'rgba(5,10,18,.78)';
+  ctx.strokeText(txt, x, y);
+  ctx.fillText(txt, x, y);
+  ctx.restore();
+}
+function sans(txt, x, y, color, size = 11.5, align = 'center', baseline = 'middle') {
+  size = Math.max(8, size * tscale());
+  ctx.save();
+  ctx.font = size + 'px ' + SANS;
+  ctx.fillStyle = color;
+  ctx.textAlign = align;
+  ctx.textBaseline = baseline;
+  ctx.lineJoin = 'round';
+  ctx.lineWidth = Math.max(2, size * .24);
+  ctx.strokeStyle = 'rgba(5,10,18,.78)';
+  ctx.strokeText(txt, x, y);
+  ctx.fillText(txt, x, y);
+  ctx.restore();
+}
+function arrow(a, b, color, opt) {
+  opt = opt || {};
+  const x1 = X(a.x), y1 = Y(a.y), x2 = X(b.x), y2 = Y(b.y);
+  const dx = x2 - x1, dy = y2 - y1, L = Math.hypot(dx, dy);
+  if (L < 1) return;
+  const ux = dx / L, uy = dy / L;
+  const head = Math.min(opt.head || 11, L * .55);
+  const hw = head * .55;
+  const bx = x2 - ux * head * .88, by = y2 - uy * head * .88;
+  ctx.save();
+  ctx.globalAlpha = opt.alpha == null ? 1 : opt.alpha;
+  ctx.strokeStyle = color;
+  ctx.lineWidth = opt.w || 3;
+  ctx.lineCap = 'round';
+  ctx.lineJoin = 'round';
+  if (opt.dash) ctx.setLineDash(opt.dash);
+  if (opt.glow) { ctx.shadowColor = color; ctx.shadowBlur = opt.glow; }
+  ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(bx, by); ctx.stroke();
+  ctx.setLineDash([]);
+  ctx.fillStyle = color;
+  ctx.beginPath();
+  ctx.moveTo(x2, y2);
+  ctx.lineTo(bx - uy * hw, by + ux * hw);
+  ctx.lineTo(bx + uy * hw, by - ux * hw);
+  ctx.closePath();
+  ctx.fill();
+  ctx.restore();
+}
+function line(a, b, color, opt) {
+  opt = opt || {};
+  ctx.save();
+  ctx.globalAlpha = opt.alpha == null ? 1 : opt.alpha;
+  ctx.strokeStyle = color;
+  ctx.lineWidth = opt.w || 1.4;
+  ctx.lineCap = 'round';
+  if (opt.dash) ctx.setLineDash(opt.dash);
+  ctx.beginPath(); ctx.moveTo(X(a.x), Y(a.y)); ctx.lineTo(X(b.x), Y(b.y)); ctx.stroke();
+  ctx.restore();
+}
+function dot(p, color, r = 4) {
+  ctx.save();
+  ctx.fillStyle = color;
+  ctx.shadowColor = color;
+  ctx.shadowBlur = 10;
+  ctx.beginPath(); ctx.arc(X(p.x), Y(p.y), r, 0, TAU); ctx.fill();
+  ctx.restore();
+}
+function handle(p, color, active) {
+  const x = X(p.x), y = Y(p.y);
+  ctx.save();
+  ctx.shadowColor = 'rgba(0,0,0,.55)';
+  ctx.shadowBlur = 8;
+  ctx.beginPath(); ctx.arc(x, y, active ? 9 : 7, 0, TAU);
+  ctx.fillStyle = '#0a111d'; ctx.fill();
+  ctx.shadowBlur = 0;
+  ctx.lineWidth = 2.2;
+  ctx.strokeStyle = color;
+  ctx.stroke();
+  ctx.beginPath(); ctx.arc(x, y, 2.3, 0, TAU);
+  ctx.fillStyle = color; ctx.fill();
+  ctx.restore();
+}
+function vlabel(a, b, txt, color, off = 18, size = 18) {
+  const x1 = X(a.x), y1 = Y(a.y), x2 = X(b.x), y2 = Y(b.y);
+  const mx = (x1 + x2) / 2, my = (y1 + y2) / 2;
+  const dx = x2 - x1, dy = y2 - y1, L = Math.hypot(dx, dy) || 1;
+  let nx = -dy / L, ny = dx / L;
+  if (ny > 0) { nx = -nx; ny = -ny; }
+  off *= tscale();
+  math(txt, mx + nx * off, my + ny * off, color, size);
+}
+function segLabel(a, b, txt, color, frac, off, size) {
+  frac = frac == null ? .5 : frac;
+  off = off == null ? 16 : off;
+  size = size || 12;
+  const x1 = X(a.x), y1 = Y(a.y), x2 = X(b.x), y2 = Y(b.y);
+  const px = lerp(x1, x2, frac), py = lerp(y1, y2, frac);
+  const dx = x2 - x1, dy = y2 - y1, L = Math.hypot(dx, dy) || 1;
+  let nx = -dy / L, ny = dx / L;
+  if (ny > 0) { nx = -nx; ny = -ny; }
+  off *= tscale();
+  sans(txt, px + nx * off, py + ny * off, color, size);
+}
+function segMath(a, b, txt, color, frac, off, size) {
+  frac = frac == null ? .5 : frac;
+  off = off == null ? 16 : off;
+  size = size || 17;
+  const x1 = X(a.x), y1 = Y(a.y), x2 = X(b.x), y2 = Y(b.y);
+  const px = lerp(x1, x2, frac), py = lerp(y1, y2, frac);
+  const dx = x2 - x1, dy = y2 - y1, L = Math.hypot(dx, dy) || 1;
+  let nx = -dy / L, ny = dx / L;
+  if (ny > 0) { nx = -nx; ny = -ny; }
+  off *= tscale();
+  math(txt, px + nx * off, py + ny * off, color, size);
+}
+function angleArc(c, th1, th2, r, color, txt, size = 15) {
+  let d = ((th2 - th1 + Math.PI) % TAU + TAU) % TAU - Math.PI;
+  if (Math.abs(d) < .02) return;
+  ctx.save();
+  ctx.strokeStyle = color;
+  ctx.lineWidth = 1.8;
+  ctx.beginPath();
+  ctx.arc(X(c.x), Y(c.y), r, -th1, -(th1 + d), d > 0);
+  ctx.stroke();
+  ctx.restore();
+  if (txt) {
+    const mid = th1 + d / 2;
+    sans(txt, X(c.x) + Math.cos(mid) * (r + 22), Y(c.y) - Math.sin(mid) * (r + 22), color, size);
+  }
+}
+function rightAngle(center, u, v, s, color) {
+  const cx = X(center.x), cy = Y(center.y);
+  const ux = u.x, uy = -u.y, vx = v.x, vy = -v.y;
+  ctx.save();
+  ctx.strokeStyle = color;
+  ctx.lineWidth = 1.2;
+  ctx.setLineDash([]);
+  ctx.beginPath();
+  ctx.moveTo(cx + ux * s, cy + uy * s);
+  ctx.lineTo(cx + (ux + vx) * s, cy + (uy + vy) * s);
+  ctx.lineTo(cx + vx * s, cy + vy * s);
+  ctx.stroke();
+  ctx.restore();
+}
+function vecText(p) {
+  return '(' + fmt(p.x) + ', ' + fmt(p.y) + ')';
+}
+
+/* ============================================================
+   控件构造
+   ============================================================ */
+function addSlider(parent, label, min, max, step, value, format, onInput) {
+  const w = document.createElement('label');
+  w.className = 'ctrl';
+  const top = document.createElement('div');
+  top.className = 'ctrl-top';
+  const l = document.createElement('span');
+  l.textContent = label;
+  const b = document.createElement('b');
+  b.textContent = format(value);
+  top.append(l, b);
+  const inp = document.createElement('input');
+  inp.type = 'range';
+  inp.min = min; inp.max = max; inp.step = step; inp.value = value;
+  inp.addEventListener('input', () => {
+    const v = parseFloat(inp.value);
+    b.textContent = format(v);
+    onInput(v);
+  });
+  w.append(top, inp);
+  parent.appendChild(w);
+  return {
+    input: inp,
+    set(v, fire) {
+      inp.value = v;
+      b.textContent = format(v);
+      if (fire) onInput(v);
+    }
+  };
+}
+function addToggle(parent, label, value, onChange) {
+  const w = document.createElement('label');
+  w.className = 'switch';
+  const s = document.createElement('span');
+  s.textContent = label;
+  const inp = document.createElement('input');
+  inp.type = 'checkbox';
+  inp.checked = !!value;
+  const i = document.createElement('i');
+  inp.addEventListener('change', () => onChange(inp.checked));
+  w.append(s, inp, i);
+  parent.appendChild(w);
+  return {input: inp};
+}
+function addBtn(parent, label, fn, cls) {
+  const b = document.createElement('button');
+  b.className = 'btn ' + (cls || '');
+  b.textContent = label;
+  b.addEventListener('click', fn);
+  parent.appendChild(b);
+  return b;
+}
+function row(parent) {
+  const r = document.createElement('div');
+  r.className = 'row';
+  parent.appendChild(r);
+  return r;
+}
+/* ============================================================
+   物理绘图扩展
+   ============================================================ */
+function path(pts, color, opt) {
+  opt = opt || {};
+  if (!pts || pts.length < 2) return;
+  ctx.save();
+  ctx.globalAlpha = opt.alpha == null ? 1 : opt.alpha;
+  ctx.strokeStyle = color;
+  ctx.lineWidth = opt.w || 2;
+  ctx.lineCap = 'round';
+  ctx.lineJoin = 'round';
+  if (opt.dash) ctx.setLineDash(opt.dash);
+  if (opt.glow) { ctx.shadowColor = color; ctx.shadowBlur = opt.glow; }
+  ctx.beginPath();
+  ctx.moveTo(X(pts[0].x), Y(pts[0].y));
+  for (let i = 1; i < pts.length; i++) ctx.lineTo(X(pts[i].x), Y(pts[i].y));
+  if (opt.close) ctx.closePath();
+  if (opt.fill) { ctx.fillStyle = opt.fill; ctx.fill(); }
+  if (!opt.fillOnly) ctx.stroke();
+  ctx.restore();
+}
+function poly(pts, fill, stroke, opt) {
+  opt = opt || {};
+  opt.close = true;
+  if (fill) opt.fill = fill;
+  path(pts, stroke || 'transparent', opt);
+}
+function rect(a, b, fill, stroke, opt) {
+  opt = opt || {};
+  const x0 = Math.min(a.x, b.x), x1 = Math.max(a.x, b.x);
+  const y0 = Math.min(a.y, b.y), y1 = Math.max(a.y, b.y);
+  const p = {x: x0, y: y0}, q = {x: x1, y: y1};
+  ctx.save();
+  ctx.globalAlpha = opt.alpha == null ? 1 : opt.alpha;
+  ctx.beginPath();
+  ctx.rect(X(p.x), Y(q.y), (q.x - p.x) * V.k, (q.y - p.y) * V.k);
+  if (fill) { ctx.fillStyle = fill; ctx.fill(); }
+  if (stroke) {
+    ctx.strokeStyle = stroke;
+    ctx.lineWidth = opt.w || 1.6;
+    if (opt.dash) ctx.setLineDash(opt.dash);
+    ctx.stroke();
+  }
+  ctx.restore();
+}
+function circleAt(c, r, fill, stroke, opt) {
+  opt = opt || {};
+  ctx.save();
+  ctx.globalAlpha = opt.alpha == null ? 1 : opt.alpha;
+  ctx.beginPath();
+  ctx.arc(X(c.x), Y(c.y), Math.abs(r * V.k), 0, TAU);
+  if (fill) { ctx.fillStyle = fill; ctx.fill(); }
+  if (stroke) {
+    ctx.strokeStyle = stroke;
+    ctx.lineWidth = opt.w || 1.6;
+    if (opt.dash) ctx.setLineDash(opt.dash);
+    ctx.stroke();
+  }
+  ctx.restore();
+}
+function spring(a, b, coils, color, opt) {
+  opt = opt || {};
+  const n = coils || 9, amp = (opt.amp == null ? .16 : opt.amp);
+  const dx = b.x - a.x, dy = b.y - a.y;
+  const L = Math.hypot(dx, dy) || 1;
+  const ux = dx / L, uy = dy / L, nx = -uy, ny = ux;
+  const pts = [{x: a.x, y: a.y}];
+  const lead = L * .12;
+  pts.push({x: a.x + ux * lead, y: a.y + uy * lead});
+  for (let i = 0; i < n; i++) {
+    const t = lead + (L - 2 * lead) * (i + .5) / n;
+    const s = (i % 2 ? -1 : 1) * amp;
+    pts.push({x: a.x + ux * t + nx * s, y: a.y + uy * t + ny * s});
+  }
+  pts.push({x: b.x - ux * lead, y: b.y - uy * lead});
+  pts.push({x: b.x, y: b.y});
+  path(pts, color, {w: opt.w || 1.8, alpha: opt.alpha, glow: opt.glow});
+}
+function ground(y, color, opt) {
+  opt = opt || {};
+  const L = lim();
+  const c = color || 'rgba(150,190,205,.55)';
+  line({x: L.x0, y: y}, {x: L.x1, y: y}, c, {w: opt.w || 1.8});
+  ctx.save();
+  ctx.strokeStyle = c;
+  ctx.globalAlpha = .5;
+  ctx.lineWidth = 1;
+  const y0 = Y(y);
+  for (let x = 0; x < W; x += 9) {
+    ctx.beginPath();
+    ctx.moveTo(x, y0 + 1);
+    ctx.lineTo(x - 6, y0 + 7);
+    ctx.stroke();
+  }
+  ctx.restore();
+}
+function addSeg(parent, items, idx, onPick) {
+  const box = document.createElement('div');
+  box.className = 'seg';
+  const btns = items.map((txt, i) => {
+    const b = document.createElement('button');
+    b.type = 'button';
+    b.textContent = txt;
+    if (i === idx) b.className = 'on';
+    b.addEventListener('click', () => {
+      btns.forEach((x, j) => x.classList.toggle('on', j === i));
+      onPick(i);
+    });
+    box.appendChild(b);
+    return b;
+  });
+  parent.appendChild(box);
+  return {
+    set(i) { btns.forEach((x, j) => x.classList.toggle('on', j === i)); }
+  };
+}
+
+const MODULES = [];
+
+/* ============================================================
+   选择性必修第二册 · 第 4 章 电磁振荡与电磁波
+   ============================================================ */
+(function () {
+
+function f2(v) {
+  const s = (Math.abs(v) < 5e-3 ? 0 : v).toFixed(2);
+  return s.replace('-', '−').replace(/0+$/, '').replace(/\.$/, '');
+}
+function f1(v) {
+  return (Math.abs(v) < 5e-2 ? 0 : v).toFixed(1).replace('-', '−');
+}
+
+function sup(n) {
+  const d = ['⁰', '¹', '²', '³', '⁴', '⁵', '⁶', '⁷', '⁸', '⁹'];
+  const t = String(n);
+  let out = '';
+  for (let i = 0; i < t.length; i++) out += t[i] === '-' ? '⁻' : d[+t[i]];
+  return out;
+}
+
+function axisBox(x0, x1, y0, y1, xlab, ylab) {
+  line({x: x0, y: y0}, {x: x1, y: y0}, 'rgba(198,222,232,.42)', {w: 1.4});
+  line({x: x0, y: y0}, {x: x0, y: y1}, 'rgba(198,222,232,.42)', {w: 1.4});
+  arrow({x: x1 - .4, y: y0}, {x: x1, y: y0}, 'rgba(198,222,232,.55)', {w: 1.2, head: 9});
+  arrow({x: x0, y: y1 - .4}, {x: x0, y: y1}, 'rgba(198,222,232,.55)', {w: 1.2, head: 9});
+  if (xlab) sans(xlab, X(x1) - 4, Y(y0) + 15, 'rgba(170,198,210,.85)', 11, 'right');
+  if (ylab) sans(ylab, X(x0) - 8, Y(y1) + 10, 'rgba(170,198,210,.85)', 11, 'right');
+}
+
+function bar(x, y, w, h, frac, col) {
+  rect({x: x, y: y}, {x: x + w, y: y + h}, 'rgba(255,255,255,.06)', 'rgba(200,220,235,.18)', {w: 1});
+  rect({x: x, y: y}, {x: x + w * Math.min(1, Math.max(0, frac)), y: y + h}, col, null);
+}
+
+/* ---------- 01 LC 振荡电路 ---------- */
+MODULES.push({
+  key: 'lc', tab: '01', name: 'LC 振荡', en: 'LC CIRCUIT', blurb: '电场能与磁场能',
+  accent: '#5eead4', rgb: '94,234,212',
+  hint: '观察电容器放电、充电过程中电场能与磁场能的相互转化',
+  playable: true,
+  state: {ph: 0, playing: true, L: .2, C: 20, showE: true},
+  reset() { const s = this.state; s.ph = 0; s.playing = true; s.L = .2; s.C = 20; s.showE = true; },
+  meta() {
+    return {
+      title: 'LC 振荡电路：电场能与磁场能此消彼长',
+      desc: '电容器放电时，电荷量减少、电流增大，电场能转化为线圈的磁场能；电流最大时电场能为零。随后线圈的自感电动势继续维持电流给电容器反向充电，如此往复形成电磁振荡。',
+      formula: 'T = 2π√(LC)，q = Q<sub>m</sub>cos ωt，i = I<sub>m</sub>sin ωt',
+      note: '振荡过程中<b>电场能与磁场能之和保持不变</b>（无阻尼时）。增大 L 或 C 都会使周期变长、频率变低。'
+    };
+  },
+  draw(dt) {
+    const s = this.state;
+    const simW = 4.8 / Math.sqrt(s.L * s.C);
+    if (s.playing) {
+      s.ph += dt * simW;
+      if (s.ph > 6.2832) s.ph -= 6.2832;
+    }
+    setFrame(.5, .55, 15);
+    base();
+    const L = lim();
+    const q = Math.cos(s.ph), i = Math.sin(s.ph);
+
+    const xL = -5.6, xR = -1.4, yT = 1.7, yB = -1.7;
+    line({x: xL, y: yT}, {x: xR, y: yT}, 'rgba(215,232,242,.8)', {w: 2});
+    line({x: xL, y: yB}, {x: xR, y: yB}, 'rgba(215,232,242,.8)', {w: 2});
+    line({x: xL, y: yT}, {x: xL, y: .32}, 'rgba(215,232,242,.8)', {w: 2});
+    line({x: xL, y: -.32}, {x: xL, y: yB}, 'rgba(215,232,242,.8)', {w: 2});
+    line({x: xR, y: yT}, {x: xR, y: .8}, 'rgba(215,232,242,.8)', {w: 2});
+    line({x: xR, y: -.8}, {x: xR, y: yB}, 'rgba(215,232,242,.8)', {w: 2});
+    spring({x: xR, y: .8}, {x: xR, y: -.8}, 6, '#b49cff', {amp: .2, w: 2});
+
+    line({x: xL - .55, y: .3}, {x: xL + .55, y: .3}, '#ffc56b', {w: 3.4});
+    line({x: xL - .55, y: -.3}, {x: xL + .55, y: -.3}, '#ffc56b', {w: 3.4});
+    const nq = Math.round(q * 6);
+    for (let k = 0; k < Math.abs(nq); k++) {
+      const px = xL - .38 + (k % 4) * .25, py = .3 + (nq > 0 ? .2 : -.2) * (1 + Math.floor(k / 4));
+      sans(nq > 0 ? '+' : '−', X(px), Y(py), nq > 0 ? '#ff9ec4' : '#8fe0ff', 9);
+    }
+    sans('C', X(xL) - .75, Y(0), 'rgba(255,215,154,.9)', 13);
+    sans('L', X(xR) + .4, Y(0), 'rgba(196,178,255,.9)', 13);
+
+    if (Math.abs(q) > .05) {
+      for (let k = 0; k < 3; k++) {
+        arrow({x: xL - .5 + k * .5, y: .26}, {x: xL - .5 + k * .5, y: .26 - .5 * Math.sign(q)},
+          'rgba(255,197,107,.4)', {w: 1.2, head: 7});
+      }
+    }
+
+    if (Math.abs(i) > .05) {
+      const cx = -3.5;
+      arrow({x: cx - .35 * Math.sign(i), y: yT}, {x: cx + .35 * Math.sign(i), y: yT}, '#5eead4', {w: 2.4, head: 11});
+      arrow({x: cx - .35 * Math.sign(i), y: yB}, {x: cx + .35 * Math.sign(i), y: yB}, '#5eead4', {w: 2.4, head: 11});
+      sans('i', X(cx), Y(yT + .38), '#7ee9d6', 13);
+    }
+
+    const ec = q * q, el = i * i;
+    if (s.showE) {
+      bar(-5.9, -2.75, 2.0, .35, ec, 'rgba(255,197,107,.85)');
+      sans('电场能 ' + f1(ec * 100) + '%', X(-5.9), Y(-2.35), 'rgba(255,215,154,.85)', 10, 'left');
+      bar(-3.6, -2.75, 2.0, .35, el, 'rgba(180,156,255,.85)');
+      sans('磁场能 ' + f1(el * 100) + '%', X(-3.6), Y(-2.35), 'rgba(196,178,255,.85)', 10, 'left');
+    }
+
+    const gx0 = .6, gx1 = 6.3, gy0 = -2.3, gy1 = 2.4;
+    axisBox(gx0, gx1, gy0, gy1, 't', '');
+    line({x: gx0, y: 0}, {x: gx1, y: 0}, 'rgba(198,222,232,.35)', {w: 1.2});
+    const cq = [], ci = [];
+    for (let k = 0; k <= 120; k++) {
+      const a = k / 120 * 6.2832;
+      cq.push({x: gx0 + (k / 120) * (gx1 - gx0), y: 1.7 * Math.cos(a)});
+      ci.push({x: gx0 + (k / 120) * (gx1 - gx0), y: 1.7 * Math.sin(a)});
+    }
+    path(cq, 'rgba(255,197,107,.9)', {w: 2.2, glow: 5});
+    path(ci, 'rgba(180,156,255,.9)', {w: 2.2, glow: 5});
+    sans('q-t', X(gx1) - 6, Y(1.95), 'rgba(255,215,154,.85)', 10.5, 'right');
+    sans('i-t', X(gx1) - 6, Y(-1.95), 'rgba(196,178,255,.85)', 10.5, 'right');
+    const nx = gx0 + (s.ph / 6.2832) * (gx1 - gx0);
+    dot({x: nx, y: 1.7 * Math.cos(s.ph)}, '#ffe9bd', 4.2);
+    dot({x: nx, y: 1.7 * Math.sin(s.ph)}, '#c4b2ff', 4.2);
+    line({x: nx, y: gy0}, {x: nx, y: gy1}, 'rgba(255,255,255,.14)', {w: 1, dash: [4, 5]});
+
+    sans('q 与 i 相差四分之一周期：电荷最多时电流为零', X(L.x0) + 16, Y(2.95),
+      'rgba(180,210,225,.7)', 10.5, 'left');
+  },
+  hud() {
+    const s = this.state;
+    const T = 6.2832 * Math.sqrt(s.L * s.C * 1e-6);
+    return [
+      {k: '周期 T', v: f2(T * 1000) + ' ms', hi: true},
+      {k: '频率 f', v: f1(1 / T) + ' Hz', hi: true},
+      {k: '自感系数 L', v: f2(s.L) + ' H'},
+      {k: '电容 C', v: f1(s.C) + ' μF'},
+      {k: '振荡相位', v: f1(s.ph * 180 / Math.PI) + '°'}
+    ];
+  },
+  panel(el) {
+    const s = this.state;
+    addSlider(el, '自感系数 L / H', .05, .5, .01, s.L, v => f2(v), v => s.L = v);
+    addSlider(el, '电容 C / μF', 5, 50, 1, s.C, v => f1(v), v => s.C = v);
+    addToggle(el, '自动振荡', s.playing, v => s.playing = v);
+    addToggle(el, '显示能量条', s.showE, v => s.showE = v);
+    addBtn(el, '回到电荷最多', () => { s.ph = 0; }, 'ghost');
+  },
+  togglePlay() { this.state.playing = !this.state.playing; },
+  playLabel() { return this.state.playing ? '⏸ 暂停' : '▶ 播放'; }
+});
+
+/* ---------- 02 电磁波的产生与传播 ---------- */
+MODULES.push({
+  key: 'emit', tab: '02', name: '电磁波', en: 'EM WAVE', blurb: 'E 与 B 结伴而行',
+  accent: '#6cb6ff', rgb: '108,182,255',
+  hint: '观察天线中振荡的电荷如何在空间中激起相互垂直的电场与磁场',
+  playable: true,
+  state: {ph: 0, playing: true, f: 15, showB: true, amp: 1.2},
+  reset() { const s = this.state; s.ph = 0; s.playing = true; s.f = 15; s.showB = true; s.amp = 1.2; },
+  meta() {
+    return {
+      title: '电磁波：电场与磁场互相激发',
+      desc: '天线中电荷上下振荡，周围产生变化的电场，变化的电场又激起变化的磁场，二者相互垂直、都垂直于传播方向，由近及远地传播出去，形成电磁波。电磁波在真空中以光速传播。',
+      formula: 'c = λf = 3.0×10<sup>8</sup> m/s（真空）',
+      note: 'E 与 B<b>同相位、互相垂直</b>，且都垂直于传播方向，所以电磁波是横波。频率越高，波长越短。'
+    };
+  },
+  draw(dt) {
+    const s = this.state;
+    s.ph += dt * (s.playing ? 1 : 0);
+    setFrame(.5, .55, 16);
+    base();
+    const L = lim();
+    const lam = 10 / s.f * 6;
+    const k = 6.2832 / lam;
+
+    const ax = -5.6, axT = 1.4;
+    line({x: ax, y: axT}, {x: ax, y: .12}, 'rgba(240,248,255,.9)', {w: 3.4});
+    line({x: ax, y: -.12}, {x: ax, y: -axT}, 'rgba(240,248,255,.9)', {w: 3.4});
+    const qq = Math.sin(s.ph * 2);
+    dot({x: ax, y: axT}, qq > 0 ? '#ff9ec4' : '#8fe0ff', 4 + Math.abs(qq) * 2.5);
+    dot({x: ax, y: -axT}, qq > 0 ? '#8fe0ff' : '#ff9ec4', 4 + Math.abs(qq) * 2.5);
+    sans('天线', X(ax), Y(-1.75), 'rgba(200,220,235,.8)', 10.5);
+    sans('电荷上下振荡', X(ax), Y(1.95), 'rgba(255,170,200,.85)', 10.5);
+
+    const ptsE = [], ptsB = [];
+    for (let xx = ax + .3; xx <= 6.4; xx += .05) {
+      const ph = k * (xx - ax) - s.ph * 2;
+      const env = Math.min(1, (xx - ax) / 1.6);
+      ptsE.push({x: xx, y: s.amp * env * Math.sin(ph)});
+      const zb = s.amp * .62 * env * Math.sin(ph);
+      ptsB.push({x: xx + zb * .5, y: -zb * .9});
+    }
+    path(ptsE, 'rgba(255,143,171,.9)', {w: 2.4, glow: 6});
+    if (s.showB) path(ptsB, 'rgba(108,182,255,.85)', {w: 2.2, glow: 5});
+
+    for (let xx = ax + 1.0; xx <= 6.2; xx += .9) {
+      const ph = k * (xx - ax) - s.ph * 2;
+      const env = Math.min(1, (xx - ax) / 1.6);
+      const ey = s.amp * env * Math.sin(ph);
+      if (Math.abs(ey) > .12) arrow({x: xx, y: 0}, {x: xx, y: ey}, 'rgba(255,143,171,.55)', {w: 1.4, head: 8});
+      if (s.showB) {
+        const zb = s.amp * .62 * env * Math.sin(ph);
+        if (Math.abs(zb) > .1) arrow({x: xx, y: 0}, {x: xx + zb * .5, y: -zb * .9}, 'rgba(108,182,255,.5)', {w: 1.3, head: 8});
+      }
+    }
+
+    arrow({x: ax + .6, y: -2.5}, {x: 5.6, y: -2.5}, '#5eead4', {w: 2.2, head: 11});
+    sans('传播方向', X(3.0), Y(-2.85), 'rgba(126,236,214,.9)', 11);
+    sans('E', X(4.6), Y(1.25), 'rgba(255,170,200,.95)', 16);
+    if (s.showB) sans('B', X(5.3), Y(-.75), 'rgba(150,196,245,.95)', 16);
+    sans('λ = ' + f1(3e8 / (s.f * 1e6)) + ' m', X(L.x0) + 16, Y(2.9), 'rgba(180,210,225,.75)', 10.5, 'left');
+  },
+  hud() {
+    const s = this.state;
+    const lam = 3e8 / (s.f * 1e6);
+    return [
+      {k: '频率 f', v: f1(s.f) + ' MHz', hi: true},
+      {k: '波长 λ', v: f1(lam) + ' m', hi: true},
+      {k: '周期 T', v: f2(1e9 / (s.f * 1e6)) + ' ns'},
+      {k: '波速 c', v: '3.0×10<sup>8</sup> m/s'},
+      {k: '波的类型', v: '横波'}
+    ];
+  },
+  panel(el) {
+    const s = this.state;
+    addSlider(el, '振荡频率 f / MHz', 5, 30, 1, s.f, v => f1(v), v => s.f = v);
+    addSlider(el, '电场振幅', .4, 1.8, .1, s.amp, v => f1(v), v => s.amp = v);
+    addToggle(el, '显示磁场 B', s.showB, v => s.showB = v);
+    addToggle(el, '自动播放', s.playing, v => s.playing = v);
+    addBtn(el, '冻结', () => this.togglePlay(), 'ghost');
+  },
+  togglePlay() { this.state.playing = !this.state.playing; },
+  playLabel() { return this.state.playing ? '⏸ 暂停' : '▶ 播放'; }
+});
+
+/* ---------- 03 电磁波谱 ---------- */
+MODULES.push({
+  key: 'spectrum', tab: '03', name: '电磁波谱', en: 'SPECTRUM', blurb: '按波长排排队',
+  accent: '#b49cff', rgb: '180,156,255',
+  hint: '拖动滑块改变波长，看看它落在电磁波谱的哪一段',
+  state: {lg: -6.25, showName: true},
+  reset() { const s = this.state; s.lg = -6.25; s.showName = true; },
+  meta() {
+    return {
+      title: '电磁波谱：波长从长到短排成一列',
+      desc: '无线电波、红外线、可见光、紫外线、X 射线、γ 射线都是电磁波，只是频率和波长不同。波长越短，频率越高，光子能量越大。可见光只占电磁波谱中极窄的一段。',
+      formula: 'c = λf，λ 越短则 f 越高',
+      note: '各种电磁波在真空中的<b>传播速度相同</b>，都是 3.0×10<sup>8</sup> m/s。波长与频率成反比，所以谱图常用对数坐标。'
+    };
+  },
+  X(l) { return -5.8 + (4 - l) / 18 * 11.6; },
+  lamText(l) {
+    const v = Math.pow(10, l);
+    if (v >= 1) return f1(v) + ' m';
+    if (v >= 1e-2) return f1(v * 100) + ' cm';
+    if (v >= 1e-6) return f1(v * 1e6) + ' μm';
+    if (v >= 1e-9) return f1(v * 1e9) + ' nm';
+    return f2(v * 1e12) + ' pm';
+  },
+  bandName(l) {
+    if (l > -3) return '无线电波';
+    if (l > -6.1) return '红外线';
+    if (l > -6.4) return '可见光';
+    if (l > -8) return '紫外线';
+    if (l > -11) return 'X 射线';
+    return 'γ 射线';
+  },
+  draw() {
+    const s = this.state;
+    setFrame(.5, .55, 15);
+    base();
+    const L = lim();
+    const bands = [
+      {n: '无线电波', a: 4, b: -3, c: 'rgba(108,182,255,.45)', y: -.25},
+      {n: '红外线', a: -3, b: -6.1, c: 'rgba(255,143,107,.5)', y: -.75},
+      {n: '可见光', a: -6.1, b: -6.4, c: 'rgba(123,224,192,.75)', y: -1.3},
+      {n: '紫外线', a: -6.4, b: -8, c: 'rgba(180,156,255,.5)', y: -1.85},
+      {n: 'X 射线', a: -8, b: -11, c: 'rgba(94,234,212,.45)', y: -2.4},
+      {n: 'γ 射线', a: -11, b: -14, c: 'rgba(255,197,107,.55)', y: -2.95}
+    ];
+
+    for (let i = 0; i < bands.length; i++) {
+      const b = bands[i];
+      const xa = this.X(b.a), xb = this.X(b.b);
+      rect({x: xb, y: .2}, {x: xa, y: .95}, b.c, 'rgba(220,235,245,.35)', {w: 1});
+      const cx = (xa + xb) / 2;
+      line({x: cx, y: .15}, {x: cx, y: b.y + .18}, 'rgba(180,205,220,.35)', {w: 1, dash: [3, 3]});
+      if (s.showName) sans(b.n, X(cx), Y(b.y), 'rgba(215,232,242,.9)', i === 2 ? 10.5 : 11);
+    }
+
+    const vi0 = this.X(-6.1), vi1 = this.X(-6.4);
+    const cols = ['#ff5f6d', '#ffa14a', '#ffe45e', '#63e07a', '#4bb8ff', '#8b6bff'];
+    for (let i = 0; i < 6; i++) {
+      const w = (vi1 - vi0) / 6;
+      rect({x: vi0 + i * w, y: .28}, {x: vi0 + (i + 1) * w, y: .87}, cols[i], null);
+    }
+
+    for (let e = 4; e >= -14; e -= 2) {
+      const xx = this.X(e);
+      line({x: xx, y: .1}, {x: xx, y: -.02}, 'rgba(198,222,232,.4)', {w: 1});
+      sans(e === 0 ? '1' : '10' + sup(e), X(xx), Y(1.25), 'rgba(160,190,205,.6)', 9.5);
+    }
+    sans('波长 λ / m（对数坐标）', X(L.x0) + 16, Y(1.62), 'rgba(170,198,210,.8)', 11, 'left');
+
+    const mk = this.X(s.lg);
+    line({x: mk, y: -.05}, {x: mk, y: 1.5}, '#ffc56b', {w: 2, dash: [5, 4]});
+    dot({x: mk, y: .58}, '#ffe9bd', 6);
+
+    const lam = Math.pow(10, s.lg);
+    const fr = 3e8 / lam;
+    const fTxt = fr >= 1e12 ? f2(fr / 1e12) + ' THz' : fr >= 1e9 ? f2(fr / 1e9) + ' GHz' : fr >= 1e6 ? f1(fr / 1e6) + ' MHz' : f1(fr / 1e3) + ' kHz';
+    sans('λ = ' + this.lamText(s.lg), X(L.x0) + 16, Y(2.92), '#ffd79a', 15, 'left');
+    sans(this.bandName(s.lg) + ' · f = ' + fTxt, X(L.x0) + 16, Y(2.35), 'rgba(255,215,154,.85)', 11, 'left');
+    const note = this.bandName(s.lg) === '无线电波' ? '广播、电视、移动通信' :
+      this.bandName(s.lg) === '红外线' ? '遥控器、热成像、遥感' :
+      this.bandName(s.lg) === '可见光' ? '人眼可见，红橙黄绿蓝靛紫' :
+      this.bandName(s.lg) === '紫外线' ? '杀菌消毒、防伪、促进合成维生素 D' :
+      this.bandName(s.lg) === 'X 射线' ? '医学透视、晶体结构分析' : '肿瘤放疗、工业探伤';
+    sans(note, X(L.x1) - 16, Y(2.92), 'rgba(190,215,230,.85)', 11.5, 'right');
+  },
+  hud() {
+    const s = this.state;
+    const lam = Math.pow(10, s.lg);
+    const fr = 3e8 / lam;
+    return [
+      {k: '波长 λ', v: this.lamText(s.lg), hi: true},
+      {k: '频率 f', v: fr >= 1e12 ? f2(fr / 1e12) + ' THz' : fr >= 1e9 ? f2(fr / 1e9) + ' GHz' : f1(fr / 1e6) + ' MHz', hi: true},
+      {k: '所属波段', v: this.bandName(s.lg)},
+      {k: '传播速度', v: '3.0×10<sup>8</sup> m/s'}
+    ];
+  },
+  panel(el) {
+    const s = this.state;
+    addSlider(el, '波长（对数）/ m', 0, 100, 1, (4 - s.lg) / 18 * 100,
+      v => '10' + sup(Math.round(4 - v / 100 * 18)) + ' m', v => s.lg = 4 - v / 100 * 18);
+    addBtn(el, '跳到可见光', () => { s.lg = -6.25; }, 'ghost');
+    addBtn(el, '跳到无线电波', () => { s.lg = 1; }, 'ghost');
+    addToggle(el, '显示波段名称', s.showName, v => s.showName = v);
+  }
+});
+
+/* ---------- 04 无线电波的发射与接收 ---------- */
+MODULES.push({
+  key: 'radio', tab: '04', name: '发射与接收', en: 'TUNING', blurb: '电谐振选台',
+  accent: '#ffc56b', rgb: '255,197,107',
+  hint: '调节接收电路的电容，使它的固有频率与发射频率相同',
+  state: {C: 100, ftx: 1.0, showCurve: true},
+  reset() { const s = this.state; s.C = 100; s.ftx = 1.0; s.showCurve = true; },
+  meta() {
+    return {
+      title: '电谐振：调台就是调频率',
+      desc: '发射台用 LC 振荡电路产生高频电流，通过天线辐射电磁波。接收端也有一套 LC 电路，改变电容就能改变它的固有频率；当固有频率与某电台频率相同时发生电谐振，该频率的信号最强。',
+      formula: 'f = 1/(2π√(LC))，谐振时 f<sub>接</sub> = f<sub>发</sub>',
+      note: '收音机选台旋钮改变的就是<b>可变电容</b>：电容变小，固有频率变高。失谐时信号明显减弱，这就是“串台”消失的原因。'
+    };
+  },
+  frx(C) {
+    return 1 / (6.2832 * Math.sqrt(200e-6 * C * 1e-12)) / 1e6;
+  },
+  draw() {
+    const s = this.state;
+    setFrame(.5, .55, 15);
+    base();
+    const L = lim();
+    const f = this.frx(s.C);
+    const S = 1 / (1 + Math.pow((f - s.ftx) / .09, 2));
+
+    const txX = -5.2, rxX = 1.8;
+    line({x: txX, y: -.9}, {x: txX, y: .9}, 'rgba(240,248,255,.9)', {w: 3.4});
+    line({x: rxX, y: -.9}, {x: rxX, y: .9}, 'rgba(240,248,255,.9)', {w: 3.4});
+    sans('发射天线', X(txX), Y(-1.3), 'rgba(255,170,200,.85)', 10.5);
+    sans('接收天线', X(rxX), Y(-1.3), 'rgba(126,236,214,.85)', 10.5);
+
+    for (let i = 0; i < 4; i++) {
+      const rr = .8 + i * .75;
+      const pts = [];
+      for (let k = -10; k <= 10; k++) {
+        const a = k / 10 * 1.1;
+        pts.push({x: txX + Math.cos(a) * rr, y: Math.sin(a) * rr * 1.05});
+      }
+      path(pts, 'rgba(255,197,107,' + (0.28 - i * .05).toFixed(2) + ')', {w: 1.4});
+    }
+    sans('f发 = ' + f2(s.ftx) + ' MHz', X(txX), Y(1.35), 'rgba(255,215,154,.9)', 11);
+
+    circleAt({x: rxX, y: 1.9}, .16 + S * .14, 'rgba(123,224,192,' + (0.2 + S * .6).toFixed(2) + ')', 'rgba(123,224,192,.8)', {w: 1.4});
+
+    const lx = 3.6, ly = 1.6;
+    line({x: rxX, y: .9}, {x: lx, y: .9}, 'rgba(215,232,242,.7)', {w: 1.6});
+    spring({x: lx, y: 1.05}, {x: lx, y: 2.3}, 5, '#b49cff', {amp: .16, w: 1.8});
+    sans('L = 200 μH', X(lx + .62), Y(1.7), 'rgba(196,178,255,.85)', 10);
+
+    const cy2 = .35;
+    line({x: lx, y: .9}, {x: lx, y: cy2 + .18}, 'rgba(215,232,242,.7)', {w: 1.6});
+    line({x: lx - .4, y: cy2 + .18}, {x: lx + .4, y: cy2 + .18}, '#5eead4', {w: 3});
+    line({x: lx - .4, y: cy2 - .18}, {x: lx + .4, y: cy2 - .18}, '#5eead4', {w: 3});
+    line({x: lx, y: cy2 - .18}, {x: lx, y: -.6}, 'rgba(215,232,242,.7)', {w: 1.6});
+    sans('C = ' + Math.round(s.C) + ' pF', X(lx + .75), Y(cy2), 'rgba(126,236,214,.9)', 10);
+
+    bar(-2.0, 2.35, 3.0, .42, S, 'rgba(123,224,192,.85)');
+    sans('接收信号强度 ' + f1(S * 100) + '%', X(-2.0), Y(3.05), S > .7 ? 'rgba(126,236,214,.95)' : 'rgba(190,215,230,.8)', 11, 'left');
+    sans('f接 = ' + f2(f) + ' MHz', X(1.2), Y(3.05), 'rgba(255,215,154,.9)', 11, 'left');
+
+    if (s.showCurve) {
+      const gx0 = -2.6, gx1 = 6.0, gy0 = -2.8, gy1 = -1.0;
+      axisBox(gx0, gx1, gy0, gy1, 'C / pF', '');
+      const pts = [];
+      for (let i = 0; i <= 100; i++) {
+        const cc = 20 + i / 100 * 180;
+        const ff = this.frx(cc);
+        const ss = 1 / (1 + Math.pow((ff - s.ftx) / .09, 2));
+        pts.push({x: gx0 + i / 100 * (gx1 - gx0), y: gy0 + ss * (gy1 - gy0) * .92 + .06});
+      }
+      path(pts, 'rgba(255,197,107,.85)', {w: 2.2, glow: 5});
+      const mx = gx0 + (s.C - 20) / 180 * (gx1 - gx0);
+      const my = gy0 + S * (gy1 - gy0) * .92 + .06;
+      dot({x: mx, y: my}, '#fff3d6', 4.5);
+      line({x: mx, y: gy0}, {x: mx, y: gy1}, 'rgba(255,255,255,.16)', {w: 1, dash: [4, 5]});
+      sans('谐振曲线', X(gx1) - 6, Y(gy1 - .12), 'rgba(255,215,154,.75)', 10, 'right');
+    }
+
+    sans(S > .7 ? '已谐振：信号最强，成功选台' : '失谐：固有频率与电台频率不同，信号很弱',
+      X(L.x0) + 16, Y(-3.1), S > .7 ? 'rgba(126,236,214,.9)' : 'rgba(190,215,230,.7)', 11, 'left');
+  },
+  hud() {
+    const s = this.state;
+    const f = this.frx(s.C);
+    const S = 1 / (1 + Math.pow((f - s.ftx) / .09, 2));
+    return [
+      {k: '发射频率', v: f2(s.ftx) + ' MHz'},
+      {k: '接收固有频率', v: f2(f) + ' MHz', hi: true},
+      {k: '可变电容 C', v: Math.round(s.C) + ' pF'},
+      {k: '信号强度', v: f1(S * 100) + ' %', hi: true},
+      {k: '状态', v: S > .7 ? '发生电谐振' : '失谐'}
+    ];
+  },
+  panel(el) {
+    const s = this.state;
+    addSlider(el, '可变电容 C / pF', 20, 200, 2, s.C, v => String(Math.round(v)), v => s.C = v);
+    addSlider(el, '电台频率 / MHz', .8, 1.4, .02, s.ftx, v => f2(v), v => s.ftx = v);
+    addToggle(el, '显示谐振曲线', s.showCurve, v => s.showCurve = v);
+    addBtn(el, '自动调谐到电台', () => { s.C = Math.min(200, Math.max(20, 126.65 / (s.ftx * s.ftx))); }, 'ghost');
+  }
+});
+
+/* ---------- 05 电磁波的应用：调制 ---------- */
+MODULES.push({
+  key: 'mod', tab: '05', name: '调制与解调', en: 'MODULATION', blurb: '把声音装上车',
+  accent: '#7be0c0', rgb: '123,224,192',
+  hint: '观察音频信号怎样改变高频载波的振幅',
+  playable: true,
+  state: {ph: 0, playing: true, fm: 1, fc: 12, m: .6, showEnv: true},
+  reset() { const s = this.state; s.ph = 0; s.playing = true; s.fm = 1; s.fc = 12; s.m = .6; s.showEnv = true; },
+  meta() {
+    return {
+      title: '调制：让电磁波把声音带出去',
+      desc: '声音信号频率很低，不能直接有效地辐射。把它“装载”到高频载波上，使载波的振幅随音频信号变化，这叫调幅。接收端再把音频信号从已调波中还原出来，就是解调。',
+      formula: 'u = (1 + m·sin 2πf<sub>m</sub>t)·sin 2πf<sub>c</sub>t',
+      note: '载波频率必须<b>远高于</b>音频频率，天线才能有效辐射。调制度 m 越大，声音越大，但 m 超过 1 会失真。'
+    };
+  },
+  draw(dt) {
+    const s = this.state;
+    if (s.playing) {
+      s.ph += dt * 1.2;
+      if (s.ph > 100) s.ph -= 100;
+    }
+    setFrame(.5, .55, 15);
+    base();
+    const L = lim();
+    const gx0 = -5.6, gx1 = 5.6;
+
+    const wave = (cy, amp, fn, col, label) => {
+      line({x: gx0, y: cy}, {x: gx1, y: cy}, 'rgba(198,222,232,.18)', {w: 1});
+      const pts = [];
+      for (let i = 0; i <= 240; i++) {
+        const u = i / 240;
+        pts.push({x: gx0 + u * (gx1 - gx0), y: cy + fn(u) * amp});
+      }
+      path(pts, col, {w: 2, glow: 5});
+      sans(label, X(gx0) + 4, Y(cy + amp + .32), col, 10.5, 'left');
+    };
+
+    wave(2.05, .62, u => Math.sin(6.2832 * s.fm * u - s.ph * s.fm), 'rgba(255,143,107,.9)', '音频信号（低频）');
+    wave(.35, .62, u => Math.sin(6.2832 * s.fc * u - s.ph * s.fc), 'rgba(108,182,255,.9)', '高频载波');
+    wave(-1.75, .58, u => (1 + s.m * Math.sin(6.2832 * s.fm * u - s.ph * s.fm)) * Math.sin(6.2832 * s.fc * u - s.ph * s.fc),
+      'rgba(123,224,192,.95)', '调幅波（已调信号）');
+
+    if (s.showEnv) {
+      const pts2 = [];
+      for (let i = 0; i <= 160; i++) {
+        const u = i / 160;
+        pts2.push({x: gx0 + u * (gx1 - gx0), y: -1.75 + .58 * (1 + s.m * Math.sin(6.2832 * s.fm * u - s.ph * s.fm))});
+      }
+      path(pts2, 'rgba(255,197,107,.45)', {w: 1.2, dash: [5, 5]});
+      const pts3 = pts2.map(q => ({x: q.x, y: -1.75 - (q.y + 1.75)}));
+      path(pts3, 'rgba(255,197,107,.45)', {w: 1.2, dash: [5, 5]});
+    }
+
+    sans('包络线的起伏就是声音的信息', X(L.x0) + 16, Y(-3.05), 'rgba(180,210,225,.7)', 10.5, 'left');
+  },
+  hud() {
+    const s = this.state;
+    return [
+      {k: '载波频率', v: f1(s.fc * 100) + ' kHz', hi: true},
+      {k: '音频频率', v: f1(s.fm * 100) + ' Hz'},
+      {k: '调制度 m', v: f2(s.m), hi: true},
+      {k: '信号带宽', v: f1(s.fm * 200) + ' Hz'},
+      {k: '调制方式', v: '调幅（AM）'}
+    ];
+  },
+  panel(el) {
+    const s = this.state;
+    addSlider(el, '音频频率 f_m', .3, 3, .1, s.fm, v => f1(v * 100) + ' Hz', v => s.fm = v);
+    addSlider(el, '载波频率 f_c', 6, 16, 1, s.fc, v => f1(v * 100) + ' kHz', v => s.fc = v);
+    addSlider(el, '调制度 m', 0, 1, .05, s.m, v => f2(v), v => s.m = v);
+    addToggle(el, '显示包络线', s.showEnv, v => s.showEnv = v);
+    addBtn(el, '▶ 播放', () => this.togglePlay(), 'ghost');
+  },
+  togglePlay() { this.state.playing = !this.state.playing; },
+  playLabel() { return this.state.playing ? '⏸ 暂停' : '▶ 播放'; }
+});
+
+})();
+
+
+/* ============================================================
+   引擎
+   ============================================================ */
+const chapterListEl = $('#chapterList');
+const catalogEl = $('#catalogTrack');
+let curIdx = 0, cur = null, hoverId = null, dragId = null, orbitId = null, orbitLast = null;
+
+MODULES.forEach((m, i) => {
+  m.en = m.en || '';
+  m.blurb = m.blurb || '';
+
+  const b = document.createElement('button');
+  b.type = 'button';
+  b.className = 'chapter-item';
+  b.style.setProperty('--tc', m.accent);
+  b.style.setProperty('--tc-rgb', m.rgb);
+  b.innerHTML = '<span class="ci-num">' + m.tab + '</span>' +
+    '<span class="ci-name">' + m.name + '</span>' +
+    '<span class="ci-en">' + m.en + '</span>';
+  b.addEventListener('click', () => activate(i));
+  chapterListEl.appendChild(b);
+
+  const c = document.createElement('button');
+  c.type = 'button';
+  c.className = 'catalog-card';
+  c.style.setProperty('--tc', m.accent);
+  c.style.setProperty('--tc-rgb', m.rgb);
+  c.innerHTML = '<span class="cc-top"><b>' + m.tab + '</b><span>' + m.en + '</span></span>' +
+    '<strong>' + m.name + '</strong><small>' + m.blurb + '</small>';
+  c.addEventListener('click', () => activate(i));
+  catalogEl.appendChild(c);
+});
+
+function plainFormula(html) {
+  return html.replace(/<br\s*\/?>/gi, ' ').replace(/<[^>]+>/g, '').replace(/\s+/g, ' ').trim();
+}
+function buildPanel() {
+  const m = cur.meta();
+  $('#title').textContent = m.title;
+  $('#desc').innerHTML = m.desc;
+  $('#formula').innerHTML = m.formula;
+  $('#note').innerHTML = m.note;
+  $('#stageFormula').textContent = plainFormula(m.formula);
+  $('#eqTag').textContent = cur.tab;
+  controlsEl.innerHTML = '';
+  cur.panel(controlsEl);
+}
+const decodeBox = document.createElement('div');
+function plainText(html) {
+  decodeBox.innerHTML = html;
+  return decodeBox.textContent;
+}
+function renderHud() {
+  if (!cur) return;
+  const rows = cur.hud();
+  hudEl.innerHTML = rows.map(r =>
+    '<div class="hud-item' + (r.hi ? ' hi' : '') + '"><span>' + r.k + '</span><b>' + r.v + '</b></div>'
+  ).join('');
+  $('#stageValues').textContent = rows.slice(0, 4).map(r => plainText(r.k + ' ' + r.v)).join('   ·   ');
+}
+function syncPlayBtn() {
+  const play = $('#playBtn');
+  if (!cur) { play.hidden = true; return; }
+  const ok = cur.playable || typeof cur.togglePlay === 'function';
+  play.hidden = !ok;
+  if (!ok) return;
+  let txt = '▶ 播放';
+  if (typeof cur.playLabel === 'function') txt = cur.playLabel();
+  else if (cur.state && cur.state.playing) txt = '⏸ 暂停';
+  if (play.textContent !== txt) play.textContent = txt;
+}
+function activate(i) {
+  curIdx = i;
+  cur = MODULES[i];
+  root.style.setProperty('--accent', cur.accent);
+  root.style.setProperty('--accent-rgb', cur.rgb);
+  for (let j = 0; j < chapterListEl.children.length; j++) {
+    chapterListEl.children[j].classList.toggle('on', j === i);
+    catalogEl.children[j].classList.toggle('on', j === i);
+  }
+  cur.reset();
+  hoverId = null;
+  dragId = null;
+  orbitId = null;
+  orbitLast = null;
+  buildPanel();
+  const m = cur.meta();
+  $('#liveName').textContent = cur.name;
+  $('#liveIndex').textContent = cur.tab;
+  $('#defMark').textContent = cur.tab;
+  $('#topChip').innerHTML = '<span class="chip-dot"></span>第 ' + (i + 1) + ' / ' + MODULES.length + ' 节';
+  $('#hint').textContent = cur.hint + ' · ← → 切换';
+  syncPlayBtn();
+  renderHud();
+  cv.style.cursor = canOrbit() ? 'grab' : 'default';
+}
+
+function resize() {
+  const r = $('.stage-card').getBoundingClientRect();
+  if (r.width < 2 || r.height < 2) return;
+  W = r.width;
+  H = r.height;
+  DPR = Math.min(2, window.devicePixelRatio || 1);
+  cv.width = Math.round(W * DPR);
+  cv.height = Math.round(H * DPR);
+  ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
+}
+
+let last = performance.now(), lastHud = 0;
+function loop(now) {
+  const dt = Math.min(.05, (now - last) / 1000 || 0);
+  last = now;
+  if (cur && W > 0) {
+    ctx.clearRect(0, 0, W, H);
+    cur.draw(dt);
+    if (now - lastHud > 120) {
+      lastHud = now;
+      renderHud();
+      syncPlayBtn();
+    }
+  }
+  requestAnimationFrame(loop);
+}
+
+/* ---------- 指针交互 ---------- */
+function pointAt(e) {
+  const r = cv.getBoundingClientRect();
+  const sx = (e.clientX - r.left) * (W / r.width);
+  const sy = (e.clientY - r.top) * (H / r.height);
+  return {sx, sy, wx: (sx - V.ox) / V.k, wy: (V.oy - sy) / V.k};
+}
+function pick(e) {
+  if (!cur) return null;
+  const p = pointAt(e);
+  const hs = cur.handles() || [];
+  let best = null, bd = 22;
+  for (const h of hs) {
+    const d = Math.hypot(X(h.x) - p.sx, Y(h.y) - p.sy);
+    if (d < bd) { bd = d; best = h.id; }
+  }
+  return best;
+}
+function canOrbit() {
+  return !!(cur && typeof cur.orbit === 'function' && (!cur.orbitEnabled || cur.orbitEnabled()));
+}
+cv.addEventListener('pointerdown', e => {
+  if (!cur) return;
+  const id = pick(e);
+  if (id) {
+    dragId = id;
+    hoverId = id;
+    cv.setPointerCapture(e.pointerId);
+    cv.style.cursor = 'grabbing';
+    e.preventDefault();
+  } else if (canOrbit()) {
+    orbitId = e.pointerId;
+    orbitLast = {x: e.clientX, y: e.clientY};
+    cv.setPointerCapture(e.pointerId);
+    cv.style.cursor = 'grabbing';
+    e.preventDefault();
+  }
+});
+cv.addEventListener('pointermove', e => {
+  if (!cur) return;
+  if (dragId) {
+    const p = pointAt(e);
+    cur.drag(dragId, {x: p.wx, y: p.wy});
+    renderHud();
+  } else if (orbitId !== null) {
+    if (!canOrbit()) return;
+    const dx = e.clientX - orbitLast.x;
+    const dy = e.clientY - orbitLast.y;
+    orbitLast = {x: e.clientX, y: e.clientY};
+    cur.orbit(dx, dy);
+    renderHud();
+  } else {
+    const id = pick(e);
+    hoverId = id;
+    cv.style.cursor = (id || canOrbit()) ? 'grab' : 'default';
+  }
+});
+function endDrag() {
+  dragId = null;
+  orbitId = null;
+  orbitLast = null;
+  cv.style.cursor = canOrbit() ? 'grab' : 'default';
+}
+cv.addEventListener('pointerup', endDrag);
+cv.addEventListener('pointercancel', endDrag);
+cv.addEventListener('pointerleave', () => {
+  if (dragId || orbitId !== null) return;
+  hoverId = null;
+  cv.style.cursor = canOrbit() ? 'grab' : 'default';
+});
+
+/* ---------- 顶部操作 ---------- */
+$('#resetBtn').addEventListener('click', () => {
+  if (!cur) return;
+  cur.reset();
+  buildPanel();
+  renderHud();
+});
+$('#playBtn').addEventListener('click', () => { if (cur && cur.togglePlay) cur.togglePlay(); });
+$('#fullBtn').addEventListener('click', () => {
+  if (!document.fullscreenElement) {
+    if (root.requestFullscreen) root.requestFullscreen();
+  } else if (document.exitFullscreen) {
+    document.exitFullscreen();
+  }
+});
+
+/* ---------- 键盘 ---------- */
+window.addEventListener('keydown', e => {
+  if (e.target && /INPUT|TEXTAREA|SELECT/.test(e.target.tagName)) return;
+  if (e.key === 'ArrowRight') {
+    e.preventDefault();
+    activate((curIdx + 1) % MODULES.length);
+  } else if (e.key === 'ArrowLeft') {
+    e.preventDefault();
+    activate((curIdx - 1 + MODULES.length) % MODULES.length);
+  } else if (e.code === 'Space') {
+    e.preventDefault();
+    if (cur && cur.togglePlay) cur.togglePlay();
+  }
+});
+
+if (window.ResizeObserver) new ResizeObserver(resize).observe($('.stage-card'));
+window.addEventListener('resize', resize);
+
+resize();
+activate(0);
+requestAnimationFrame(loop);
+</script>
+</body>
+</html>

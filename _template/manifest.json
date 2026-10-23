@@ -1,0 +1,251 @@
+{
+  "books": [
+    {
+      "name": "必修第一册",
+      "chapters": [
+        {
+          "no": 1,
+          "dir": "运动的描述",
+          "title": "运动的描述",
+          "en": "MOTION",
+          "desc": "参考系、位移、速度、加速度",
+          "accent": "#5eead4"
+        },
+        {
+          "no": 2,
+          "dir": "匀变速直线运动的研究",
+          "title": "匀变速直线运动的研究",
+          "en": "UNIFORM ACCELERATION",
+          "desc": "v-t 图象、位移公式、追及相遇",
+          "accent": "#6cb6ff"
+        },
+        {
+          "no": 3,
+          "dir": "相互作用——力",
+          "title": "相互作用——力",
+          "en": "FORCES",
+          "desc": "重力、弹力、摩擦力、力的合成",
+          "accent": "#b49cff"
+        },
+        {
+          "no": 4,
+          "dir": "运动和力的关系",
+          "title": "运动和力的关系",
+          "en": "NEWTON'S LAWS",
+          "desc": "牛顿三定律、超重失重、连接体",
+          "accent": "#ffc56b"
+        }
+      ]
+    },
+    {
+      "name": "必修第二册",
+      "chapters": [
+        {
+          "no": 5,
+          "dir": "抛体运动",
+          "title": "抛体运动",
+          "en": "PROJECTILE MOTION",
+          "desc": "平抛分解、斜面抛体、轨迹方程",
+          "accent": "#ffa97a"
+        },
+        {
+          "no": 6,
+          "dir": "圆周运动",
+          "title": "圆周运动",
+          "en": "CIRCULAR MOTION",
+          "desc": "线速度、向心力、传动与离心",
+          "accent": "#7be0c0"
+        },
+        {
+          "no": 7,
+          "dir": "万有引力与宇宙航行",
+          "title": "万有引力与宇宙航行",
+          "en": "GRAVITATION",
+          "desc": "开普勒定律、卫星、宇宙速度",
+          "accent": "#9ad0ff"
+        },
+        {
+          "no": 8,
+          "dir": "机械能守恒定律",
+          "title": "机械能守恒定律",
+          "en": "MECHANICAL ENERGY",
+          "desc": "功、功率、动能定理、能量守恒",
+          "accent": "#ff8fab"
+        }
+      ]
+    },
+    {
+      "name": "必修第三册",
+      "chapters": [
+        {
+          "no": 9,
+          "dir": "静电场及其应用",
+          "title": "静电场及其应用",
+          "en": "ELECTROSTATICS",
+          "desc": "库仑定律、电场强度、电场线",
+          "accent": "#5eead4"
+        },
+        {
+          "no": 10,
+          "dir": "静电场中的能量",
+          "title": "静电场中的能量",
+          "en": "ELECTRIC POTENTIAL",
+          "desc": "电势、电势差、电容器",
+          "accent": "#6cb6ff"
+        },
+        {
+          "no": 11,
+          "dir": "电路及其应用",
+          "title": "电路及其应用",
+          "en": "CIRCUITS",
+          "desc": "欧姆定律、串并联、电表改装",
+          "accent": "#b49cff"
+        },
+        {
+          "no": 12,
+          "dir": "电能能量守恒定律",
+          "title": "电能 能量守恒定律",
+          "en": "ELECTRIC ENERGY",
+          "desc": "电功、焦耳定律、电源效率",
+          "accent": "#ffc56b"
+        },
+        {
+          "no": 13,
+          "dir": "电磁感应与电磁波初步",
+          "title": "电磁感应与电磁波初步",
+          "en": "ELECTROMAGNETISM",
+          "desc": "磁场、安培定则、电磁感应",
+          "accent": "#7be0c0"
+        }
+      ]
+    },
+    {
+      "name": "选择性必修第一册",
+      "chapters": [
+        {
+          "no": 14,
+          "dir": "动量守恒定律",
+          "title": "动量守恒定律",
+          "en": "MOMENTUM",
+          "desc": "冲量、碰撞、反冲",
+          "accent": "#ffa97a"
+        },
+        {
+          "no": 15,
+          "dir": "机械振动",
+          "title": "机械振动",
+          "en": "OSCILLATION",
+          "desc": "简谐运动、单摆、受迫振动",
+          "accent": "#9ad0ff"
+        },
+        {
+          "no": 16,
+          "dir": "机械波",
+          "title": "机械波",
+          "en": "MECHANICAL WAVES",
+          "desc": "波长频率、波的图象、干涉衍射",
+          "accent": "#ff8fab"
+        },
+        {
+          "no": 17,
+          "dir": "光",
+          "title": "光",
+          "en": "OPTICS",
+          "desc": "折射、全反射、干涉、衍射",
+          "accent": "#5eead4"
+        }
+      ]
+    },
+    {
+      "name": "选择性必修第二册",
+      "chapters": [
+        {
+          "no": 18,
+          "dir": "安培力与洛伦兹力",
+          "title": "安培力与洛伦兹力",
+          "en": "MAGNETIC FORCE",
+          "desc": "安培力、左手定则、粒子回旋",
+          "accent": "#6cb6ff"
+        },
+        {
+          "no": 19,
+          "dir": "电磁感应",
+          "title": "电磁感应",
+          "en": "INDUCTION",
+          "desc": "楞次定律、法拉第定律、自感",
+          "accent": "#b49cff"
+        },
+        {
+          "no": 20,
+          "dir": "交变电流",
+          "title": "交变电流",
+          "en": "AC CURRENT",
+          "desc": "正弦交流、变压器、输电",
+          "accent": "#ffc56b"
+        },
+        {
+          "no": 21,
+          "dir": "电磁振荡与电磁波",
+          "title": "电磁振荡与电磁波",
+          "en": "EM WAVES",
+          "desc": "LC 振荡、电磁波谱",
+          "accent": "#7be0c0"
+        },
+        {
+          "no": 22,
+          "dir": "传感器",
+          "title": "传感器",
+          "en": "SENSORS",
+          "desc": "敏感元件、传感器电路",
+          "accent": "#ffa97a"
+        }
+      ]
+    },
+    {
+      "name": "选择性必修第三册",
+      "chapters": [
+        {
+          "no": 23,
+          "dir": "分子动理论",
+          "title": "分子动理论",
+          "en": "KINETIC THEORY",
+          "desc": "分子大小、布朗运动、分子力",
+          "accent": "#9ad0ff"
+        },
+        {
+          "no": 24,
+          "dir": "气体固体和液体",
+          "title": "气体、固体和液体",
+          "en": "GASES & FLUIDS",
+          "desc": "气体实验定律、理想气体",
+          "accent": "#ff8fab"
+        },
+        {
+          "no": 25,
+          "dir": "热力学定律",
+          "title": "热力学定律",
+          "en": "THERMODYNAMICS",
+          "desc": "内能、热力学第一定律",
+          "accent": "#5eead4"
+        },
+        {
+          "no": 26,
+          "dir": "原子结构和波粒二象性",
+          "title": "原子结构和波粒二象性",
+          "en": "ATOM & QUANTUM",
+          "desc": "光谱、光电效应、物质波",
+          "accent": "#6cb6ff"
+        },
+        {
+          "no": 27,
+          "dir": "原子核",
+          "title": "原子核",
+          "en": "NUCLEAR PHYSICS",
+          "desc": "衰变、半衰期、核能",
+          "accent": "#b49cff"
+        }
+      ]
+    }
+  ],
+  "topics": []
+}

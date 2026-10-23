@@ -1,0 +1,1609 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#070a11">
+<meta name="description" content="电路及其应用：欧姆定律与 U-I 图象、串联与并联、电阻定律、电表改装、伏安法测电阻。">
+<title>电路及其应用 · 动态教学实验室</title>
+<style>
+/* ============================================================
+   高中物理 · Physics Lab
+   ============================================================ */
+:root{
+  --bg:#060a12;
+  --text:#eef7f6;
+  --text-soft:#c3d5dc;
+  --muted:#8ba1ac;
+  --muted-2:#6f858f;
+  --line:rgba(165,200,220,.11);
+  --line-strong:rgba(165,200,220,.2);
+  --accent:#5eead4;
+  --accent-rgb:94,234,212;
+  --sans:"PingFang SC","Microsoft YaHei","Noto Sans SC","Source Han Sans SC",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --serif:"Cambria Math","STIX Two Math","Latin Modern Math","Times New Roman","Songti SC",serif;
+  --mono:"Cascadia Code","SFMono-Regular","JetBrains Mono",Consolas,monospace;
+  --radius:18px;
+  --shadow:0 24px 60px rgba(0,0,0,.3);
+}
+*{box-sizing:border-box}
+html,body{height:100%;margin:0}
+button:focus-visible,a:focus-visible,input:focus-visible{outline:2px solid rgba(var(--accent-rgb),.85);outline-offset:2px}
+body{
+  background:var(--bg);color:var(--text);font-family:var(--sans);
+  overflow:hidden;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;
+}
+button{font:inherit;color:inherit}
+::selection{background:rgba(var(--accent-rgb),.24);color:#fff}
+[hidden]{display:none!important}
+
+/* ---------- atmosphere ---------- */
+.ambient{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden;background:
+  radial-gradient(ellipse 70% 60% at 50% -12%,rgba(43,92,122,.2),transparent 64%),
+  linear-gradient(180deg,#08101c 0%,#05090f 100%);}
+.ambient::after{
+  content:"";position:absolute;inset:0;
+  background-image:
+    linear-gradient(rgba(180,215,235,.028) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(180,215,235,.028) 1px,transparent 1px);
+  background-size:70px 70px;
+  -webkit-mask-image:radial-gradient(ellipse 78% 68% at 46% 34%,#000 8%,transparent 78%);
+  mask-image:radial-gradient(ellipse 78% 68% at 46% 34%,#000 8%,transparent 78%);
+}
+.glow{position:absolute;border-radius:50%;filter:blur(90px);pointer-events:none}
+.glow-a{width:540px;height:540px;left:-140px;top:-220px;background:rgba(var(--accent-rgb),.1)}
+.glow-b{width:640px;height:640px;right:-220px;bottom:-300px;background:rgba(104,86,210,.08)}
+
+/* ---------- app ---------- */
+.app{position:relative;z-index:1;height:100vh;height:100dvh;min-height:660px;display:flex;flex-direction:column}
+
+/* ---------- topbar ---------- */
+.topbar{flex:0 0 74px;display:flex;align-items:center;justify-content:space-between;gap:18px;padding:0 20px}
+.brand{display:flex;align-items:center;gap:12px;min-width:0}
+.brand-mark{
+  width:42px;height:42px;border-radius:12px;flex:none;display:grid;place-items:center;
+  border:1px solid rgba(var(--accent-rgb),.3);
+  background:linear-gradient(140deg,rgba(var(--accent-rgb),.18),rgba(var(--accent-rgb),.02));
+  box-shadow:0 0 28px rgba(var(--accent-rgb),.14),inset 0 0 18px rgba(var(--accent-rgb),.05);
+  transition:border-color .4s,box-shadow .4s;
+}
+.brand-mark svg{width:30px;height:30px;display:block}
+.brand-copy{min-width:0}
+.eyebrow{display:flex;align-items:center;gap:7px;font-size:8px;letter-spacing:.2em;color:var(--muted);text-transform:uppercase;white-space:nowrap}
+.eyebrow i{width:13px;height:1px;background:rgba(255,255,255,.18);flex:none}
+.brand h1{margin:3px 0 0;font-size:15px;font-weight:600;letter-spacing:.06em;white-space:nowrap}
+.title-en{font-size:.64em;color:var(--muted);font-weight:400;letter-spacing:.14em}
+.top-actions{display:flex;align-items:center;gap:8px;flex:none}
+.status-chip{
+  display:flex;align-items:center;gap:7px;padding:7px 11px;border-radius:999px;
+  border:1px solid var(--line);background:rgba(255,255,255,.03);
+  font-size:10px;color:var(--text-soft);white-space:nowrap;letter-spacing:.04em;
+}
+.chip-dot{width:5px;height:5px;border-radius:50%;background:var(--accent);box-shadow:0 0 9px var(--accent);flex:none}
+.ghost-btn,.icon-btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:6px;
+  border:1px solid var(--line);background:rgba(255,255,255,.025);color:var(--text-soft);
+  border-radius:10px;padding:8px 12px;font-size:11px;cursor:pointer;
+  transition:background .18s,border-color .18s,color .18s,transform .18s;white-space:nowrap;
+}
+.ghost-btn:hover,.icon-btn:hover{background:rgba(255,255,255,.06);border-color:var(--line-strong);color:#fff}
+.ghost-btn:active,.icon-btn:active{transform:translateY(1px)}
+.ghost-btn svg{width:14px;height:14px}
+.icon-btn{width:36px;height:36px;padding:0}
+.icon-btn svg{width:16px;height:16px}
+
+/* ---------- workspace ---------- */
+.workspace{
+  flex:1;min-height:0;display:grid;gap:11px;padding:0 16px 15px;
+  grid-template-columns:minmax(248px,276px) minmax(0,1fr) minmax(298px,326px);
+  grid-template-rows:minmax(0,1fr) 146px;
+  grid-template-areas:"controls stage details" "catalog catalog catalog";
+}
+.panel,.stage-card,.catalog{
+  border:1px solid var(--line);
+  background:linear-gradient(180deg,rgba(16,27,45,.9),rgba(8,15,27,.93));
+  box-shadow:var(--shadow),inset 0 1px 0 rgba(255,255,255,.04);
+  backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);
+}
+.panel{min-height:0;border-radius:var(--radius);overflow-y:auto;scrollbar-width:thin;scrollbar-color:rgba(255,255,255,.12) transparent}
+.panel::-webkit-scrollbar{width:5px}
+.panel::-webkit-scrollbar-thumb{background:rgba(255,255,255,.12);border-radius:99px}
+.panel-controls{grid-area:controls;padding:15px 14px 14px;display:flex;flex-direction:column;gap:11px}
+.panel-details{grid-area:details;padding:15px 14px 14px;display:flex;flex-direction:column;gap:10px}
+.panel-controls>*,.panel-details>*{flex:0 0 auto}
+.panel-head{display:flex;align-items:flex-start;gap:9px;min-width:0}
+.section-num{
+  font-family:var(--mono);font-size:9.5px;letter-spacing:.04em;color:var(--accent);
+  border:1px solid rgba(var(--accent-rgb),.25);background:rgba(var(--accent-rgb),.07);
+  border-radius:7px;padding:4px 6px;line-height:1;margin-top:2px;flex:none;
+}
+.panel-head h2{margin:0;font-size:14.5px;font-weight:600;letter-spacing:.04em;line-height:1.35}
+.panel-head p{margin:2px 0 0;font-size:9.5px;color:var(--muted);letter-spacing:.03em}
+
+/* ---------- chapter nav ---------- */
+.chapter-list{display:flex;flex-direction:column;gap:2px}
+.chapter-item{
+  display:flex;align-items:center;gap:9px;min-width:0;padding:7px 9px;border-radius:9px;
+  border:1px solid transparent;background:transparent;color:var(--muted);
+  cursor:pointer;text-align:left;transition:background .16s,color .16s,border-color .16s;
+}
+.chapter-item:hover{background:rgba(255,255,255,.045);color:var(--text-soft)}
+.chapter-item.on{color:var(--tc);background:rgba(var(--tc-rgb),.09);border-color:rgba(var(--tc-rgb),.22)}
+.ci-num{font-family:var(--mono);font-size:9px;opacity:.65;width:17px;flex:none}
+.ci-name{font-size:12px;letter-spacing:.02em;white-space:nowrap;min-width:0;overflow:hidden;text-overflow:ellipsis}
+.ci-en{margin-left:auto;font-size:7px;letter-spacing:.13em;opacity:.4;white-space:nowrap}
+.chapter-item.on .ci-en{opacity:.65}
+
+.block-label{
+  display:flex;align-items:baseline;justify-content:space-between;gap:8px;
+  padding-top:10px;border-top:1px solid var(--line);
+  font-size:8.5px;letter-spacing:.13em;color:var(--muted);text-transform:uppercase;
+}
+.block-label span:last-child{font-size:8px;letter-spacing:.04em;color:var(--muted-2);text-transform:none}
+
+/* ---------- controls ---------- */
+.controls{display:flex;flex-direction:column;gap:9px}
+.ctrl{display:flex;flex-direction:column;gap:6px}
+.ctrl-top{display:flex;align-items:baseline;justify-content:space-between;gap:10px;font-size:10.5px;color:var(--muted);letter-spacing:.02em}
+.ctrl-top b{font-family:var(--mono);font-size:10.5px;font-weight:500;color:var(--accent)}
+input[type=range]{
+  -webkit-appearance:none;appearance:none;width:100%;height:3px;border-radius:99px;margin:5px 0;
+  background:linear-gradient(90deg,rgba(var(--accent-rgb),.72),rgba(var(--accent-rgb),.12));
+  outline:none;cursor:pointer;
+}
+input[type=range]::-webkit-slider-thumb{
+  -webkit-appearance:none;width:13px;height:13px;border-radius:50%;
+  background:#0b1220;border:2px solid var(--accent);cursor:grab;
+  box-shadow:0 0 12px rgba(var(--accent-rgb),.55);
+}
+input[type=range]::-moz-range-thumb{
+  width:11px;height:11px;border-radius:50%;background:#0b1220;border:2px solid var(--accent);
+  box-shadow:0 0 12px rgba(var(--accent-rgb),.55);
+}
+.switch{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:5px 0;font-size:11px;color:var(--text-soft);cursor:pointer;position:relative}
+.switch > span{flex:1;line-height:1.45}
+.switch input{position:absolute;opacity:0;width:0;height:0;pointer-events:none}
+.switch i{width:32px;height:18px;border-radius:99px;background:rgba(255,255,255,.09);border:1px solid rgba(255,255,255,.07);position:relative;flex:none;transition:.2s}
+.switch i::after{content:"";position:absolute;top:2px;left:2px;width:12px;height:12px;border-radius:50%;background:#93a8b2;transition:.2s}
+.switch input:checked + i{background:rgba(var(--accent-rgb),.3);border-color:rgba(var(--accent-rgb),.35)}
+.switch input:checked + i::after{transform:translateX(14px);background:var(--accent);box-shadow:0 0 8px rgba(var(--accent-rgb),.7)}
+.switch input:focus-visible + i{outline:2px solid rgba(var(--accent-rgb),.8);outline-offset:3px}
+.row{display:flex;gap:6px;flex-wrap:wrap}
+.btn{
+  flex:1;min-width:84px;padding:8px 9px;border-radius:8px;cursor:pointer;
+  border:1px solid rgba(var(--accent-rgb),.28);background:rgba(var(--accent-rgb),.08);
+  color:var(--accent);font-size:10.5px;letter-spacing:.02em;transition:.18s;
+}
+.btn:hover{background:rgba(var(--accent-rgb),.16);border-color:rgba(var(--accent-rgb),.45)}
+.btn:active{transform:translateY(1px)}
+.btn.ghost{border-color:var(--line);background:rgba(255,255,255,.03);color:var(--muted)}
+.btn.ghost:hover{color:var(--text-soft);border-color:var(--line-strong);background:rgba(255,255,255,.06)}
+.seg{display:grid;grid-template-columns:repeat(3,1fr);gap:3px;padding:3px;border-radius:10px;background:rgba(255,255,255,.04);border:1px solid var(--line)}
+.seg button{padding:6px 3px;border-radius:7px;border:1px solid transparent;background:transparent;color:var(--muted);font-size:10px;cursor:pointer;transition:.18s;white-space:nowrap}
+.seg button:hover{color:var(--text-soft)}
+.seg button.on{background:rgba(var(--accent-rgb),.14);border-color:rgba(var(--accent-rgb),.26);color:var(--accent)}
+
+/* ---------- stage ---------- */
+.stage-card{
+  grid-area:stage;position:relative;min-height:0;border-radius:var(--radius);overflow:hidden;isolation:isolate;
+  background:
+    radial-gradient(ellipse 70% 64% at 52% 42%,rgba(var(--accent-rgb),.06),transparent 68%),
+    radial-gradient(ellipse 55% 55% at 60% 108%,rgba(73,60,122,.1),transparent 72%),
+    linear-gradient(180deg,#091321 0%,#060d17 100%);
+}
+.stage-card::before{
+  content:"";position:absolute;inset:0;z-index:1;pointer-events:none;
+  background-image:radial-gradient(rgba(190,225,238,.1) .7px,transparent .8px);
+  background-size:26px 26px;opacity:.28;
+  -webkit-mask-image:radial-gradient(ellipse 72% 72% at 50% 44%,#000,transparent 76%);
+  mask-image:radial-gradient(ellipse 72% 72% at 50% 44%,#000,transparent 76%);
+}
+.stage-card::after{
+  content:"";position:absolute;inset:0;z-index:5;pointer-events:none;border-radius:inherit;
+  box-shadow:inset 0 0 90px rgba(0,0,0,.28),inset 0 1px 0 rgba(255,255,255,.04);
+}
+#cv{position:absolute;inset:0;width:100%;height:100%;display:block;z-index:2;touch-action:none;cursor:default}
+
+.stage-top{position:absolute;z-index:7;top:13px;left:14px;right:14px;display:flex;justify-content:space-between;align-items:flex-start;gap:10px;pointer-events:none}
+.live-badge{
+  display:flex;align-items:center;gap:9px;padding:7px 10px;border-radius:11px;
+  background:rgba(5,11,20,.7);border:1px solid rgba(201,232,242,.1);
+  backdrop-filter:blur(14px);box-shadow:0 10px 30px rgba(0,0,0,.16);
+}
+.live-dot{width:7px;height:7px;border-radius:50%;background:var(--accent);box-shadow:0 0 13px rgba(var(--accent-rgb),.8);flex:none}
+.live-copy{display:flex;flex-direction:column;gap:3px}
+.live-copy strong{line-height:1.15}
+.live-copy span{font-size:7.5px;color:var(--muted);letter-spacing:.12em}
+.live-copy strong{font-size:12.5px;font-weight:600;letter-spacing:.04em;white-space:nowrap}
+.live-idx{
+  font-family:var(--mono);font-size:8.5px;color:var(--accent);
+  background:rgba(var(--accent-rgb),.09);border:1px solid rgba(var(--accent-rgb),.18);
+  border-radius:999px;padding:3px 6px;white-space:nowrap;
+}
+.stage-tools{display:flex;gap:6px;pointer-events:auto}
+.mini-btn{
+  display:inline-flex;align-items:center;gap:5px;padding:7px 10px;border-radius:9px;
+  font-size:10px;color:var(--text-soft);cursor:pointer;
+  border:1px solid rgba(201,236,228,.12);background:rgba(5,11,20,.62);
+  backdrop-filter:blur(12px);transition:.18s;
+}
+.mini-btn:hover{background:rgba(14,28,44,.85);border-color:rgba(var(--accent-rgb),.3);color:#fff}
+.stage-note{
+  position:absolute;z-index:6;left:16px;bottom:86px;max-width:70%;
+  font-family:var(--mono);font-size:8px;letter-spacing:.05em;
+  color:rgba(170,200,212,.5);pointer-events:none;
+}
+.definition-bar{
+  position:absolute;z-index:7;left:13px;right:13px;bottom:13px;
+  display:flex;align-items:center;gap:11px;min-height:58px;padding:8px 11px;
+  border:1px solid rgba(200,232,242,.11);border-radius:13px;
+  background:rgba(5,12,21,.8);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);
+  box-shadow:0 16px 40px rgba(0,0,0,.2);
+}
+.definition-mark{
+  width:34px;height:34px;border-radius:9px;display:grid;place-items:center;flex:none;
+  color:var(--accent);border:1px solid rgba(var(--accent-rgb),.26);background:rgba(var(--accent-rgb),.08);
+  font-family:var(--mono);font-size:9.5px;letter-spacing:.02em;
+}
+.definition-copy{flex:1;min-width:0;display:flex;flex-direction:column;gap:1px}
+.def-title{font-size:7px;letter-spacing:.14em;color:var(--muted)}
+.def-formula{font-family:var(--serif);font-size:14px;line-height:1.35;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.def-values{font-family:var(--mono);font-size:8.5px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+
+/* ---------- details ---------- */
+.concept h3{margin:0;font-size:15.5px;line-height:1.45;font-weight:600;letter-spacing:.01em}
+.concept .desc{margin:5px 0 0;font-size:11px;line-height:1.72;color:var(--text-soft)}
+.desc b,.note-card b{color:#fff;font-weight:500}
+.equation-card{
+  border:1px solid rgba(var(--accent-rgb),.2);border-radius:13px;padding:9px 11px 7px;
+  background:radial-gradient(ellipse 100% 120% at 0% 0%,rgba(var(--accent-rgb),.08),transparent 58%),rgba(0,0,0,.16);
+}
+.eq-head{display:flex;justify-content:space-between;align-items:center;gap:8px;font-size:8px;letter-spacing:.08em;color:var(--muted)}
+.eq-head span:last-child{font-family:var(--mono);font-size:8px;color:var(--accent)}
+.formula{
+  font-family:var(--serif);font-size:17px;line-height:1.45;text-align:center;color:#fff;
+  padding:7px 2px 6px;letter-spacing:.01em;text-shadow:0 0 20px rgba(var(--accent-rgb),.24);
+  overflow-wrap:anywhere;
+}
+.formula sub,.formula sup{font-size:.6em}
+.metric-grid{display:grid;grid-template-columns:1fr 1fr;gap:5px}
+.hud-item{
+  display:flex;flex-direction:column;gap:2px;min-width:0;
+  padding:7px 9px;border-radius:9px;border:1px solid var(--line);
+  background:rgba(255,255,255,.025);
+}
+.hud-item span{font-size:8px;color:var(--muted);letter-spacing:.05em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hud-item b{font-family:var(--mono);font-size:11px;font-weight:500;color:var(--text-soft);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hud-item.hi{border-color:rgba(var(--accent-rgb),.26);background:rgba(var(--accent-rgb),.07)}
+.hud-item.hi b{color:var(--accent)}
+.note-card{
+  margin-top:auto;
+  border:1px solid var(--line);border-radius:12px;padding:9px 11px;
+  background:rgba(255,255,255,.025);
+}
+.tip-card{
+  margin-top:auto;border:1px solid var(--line);border-radius:11px;padding:9px 11px;
+  background:rgba(255,255,255,.02);
+}
+.tip-card span{display:block;font-size:7.5px;letter-spacing:.13em;color:var(--muted-2);text-transform:uppercase;margin-bottom:3px}
+.tip-card p{margin:0;font-size:9.5px;line-height:1.7;color:var(--muted)}
+.metric-grid .hud-item:last-child:nth-child(odd){grid-column:1/-1}
+.note-head{display:flex;align-items:center;gap:6px;font-size:8px;letter-spacing:.1em;color:var(--text-soft);text-transform:uppercase;margin-bottom:3px}
+.note-icon{
+  width:15px;height:15px;border-radius:50%;display:grid;place-items:center;
+  border:1px solid rgba(var(--accent-rgb),.3);color:var(--accent);
+  font-family:var(--serif);font-size:9px;line-height:1;
+}
+.note-card p{margin:0;font-size:10px;line-height:1.7;color:var(--muted)}
+.note-card i{font-family:var(--serif);font-style:italic;color:var(--text-soft)}
+.nw{white-space:nowrap}
+
+/* ---------- catalog ---------- */
+.catalog{
+  grid-area:catalog;min-width:0;border-radius:var(--radius);
+  padding:11px 15px 9px;display:flex;flex-direction:column;gap:7px;
+}
+.catalog-head{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.catalog-title{display:flex;align-items:flex-start;gap:9px;min-width:0}
+.catalog-head h2{margin:0;font-size:13.5px;font-weight:600;letter-spacing:.04em;line-height:1.35}
+.catalog-head p{margin:1px 0 0;font-size:9px;color:var(--muted);letter-spacing:.03em}
+.catalog-hint{font-size:8px;letter-spacing:.05em;color:var(--muted-2);white-space:nowrap;font-family:var(--mono)}
+.catalog-track{
+  display:flex;gap:6px;min-height:0;overflow-x:auto;overflow-y:hidden;
+  padding-bottom:2px;scrollbar-width:thin;scrollbar-color:rgba(255,255,255,.12) transparent;
+}
+.catalog-track::-webkit-scrollbar{height:4px}
+.catalog-track::-webkit-scrollbar-thumb{background:rgba(255,255,255,.12);border-radius:99px}
+.catalog-card{
+  flex:1 1 0;min-width:126px;display:flex;flex-direction:column;gap:1px;
+  padding:7px 10px 6px;border-radius:10px;border:1px solid var(--line);
+  background:rgba(255,255,255,.025);color:var(--text-soft);cursor:pointer;text-align:left;
+  transition:background .16s,border-color .16s,box-shadow .16s;
+}
+.catalog-card:hover{background:rgba(255,255,255,.055);border-color:rgba(255,255,255,.17)}
+.catalog-card.on{border-color:rgba(var(--tc-rgb),.35);background:rgba(var(--tc-rgb),.08);box-shadow:inset 0 0 20px rgba(var(--tc-rgb),.05)}
+.cc-top{display:flex;justify-content:space-between;align-items:baseline;gap:6px;font-family:var(--mono);font-size:7px;letter-spacing:.1em;color:var(--muted-2)}
+.cc-top b{font-weight:500;color:inherit}
+.catalog-card.on .cc-top{color:var(--tc)}
+.catalog-card strong{font-size:11px;font-weight:600;line-height:1.5;color:var(--text-soft);white-space:nowrap}
+.catalog-card.on strong{color:var(--tc)}
+.catalog-card small{font-size:8px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+
+/* ---------- responsive ---------- */
+@media(max-width:1240px){
+  .workspace{grid-template-columns:minmax(228px,246px) minmax(0,1fr) minmax(272px,296px);gap:10px}
+  .panel-controls,.panel-details{padding:13px 12px}
+  .brand h1{font-size:14px}
+}
+@media(max-width:1020px){
+  body{overflow:auto}
+  .app{height:auto;min-height:100vh;min-height:100dvh}
+  .topbar{flex:0 0 auto;flex-wrap:wrap;gap:10px;padding:10px 14px}
+  .brand{flex:1 1 100%}
+  .top-actions{width:100%;justify-content:flex-end}
+  .workspace{
+    flex:none;display:flex;flex-direction:column;gap:10px;padding:0 12px 16px;
+  }
+  .stage-card{order:1;height:min(62vh,560px);min-height:400px;flex:none}
+  .panel-controls{order:2;flex:none;overflow:visible}
+  .panel-details{order:3;flex:none;overflow:visible}
+  .catalog{order:4;flex:none;height:auto}
+  .chapter-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:3px}
+  .metric-grid{grid-template-columns:repeat(3,1fr)}
+  .catalog-track{flex-wrap:nowrap}
+  .catalog-card{flex:0 0 140px}
+}
+@media(max-width:620px){
+  .eyebrow,.title-en{display:none}
+  .status-chip{display:none}
+  .brand h1{font-size:14px}
+  .workspace{padding:0 9px 12px}
+  .stage-card{height:52vh;min-height:340px}
+  .stage-card .stage-note{display:none}
+  .definition-bar{left:10px;right:10px;bottom:10px;min-height:52px;padding:7px 9px}
+  .def-formula{font-size:12.5px}
+  .def-values{font-size:8px}
+  .definition-mark{width:29px;height:29px;font-size:8.5px}
+  .panel-controls,.panel-details{padding:12px 11px}
+  .metric-grid{grid-template-columns:1fr 1fr}
+  .catalog{padding:10px 11px 8px}
+  .catalog-hint{display:none}
+  .catalog-card{flex:0 0 132px}
+  .live-copy strong{font-size:11.5px}
+  .ci-en{display:none}
+}
+@media(min-width:1021px) and (max-height:740px){
+  .app{min-height:0}
+  .topbar{flex-basis:62px;padding:0 14px}
+  .workspace{grid-template-rows:minmax(0,1fr) 128px;gap:9px;padding:0 12px 12px}
+  .panel-controls,.panel-details{padding:11px 11px;gap:8px}
+  .catalog{padding:8px 12px 6px;gap:5px}
+  .catalog-card{padding:6px 8px 5px}
+  .catalog-card small{display:none}
+  .definition-bar{min-height:52px;padding:7px 9px}
+}
+@media(prefers-reduced-motion:reduce){
+  *{transition:none!important;animation:none!important}
+}
+</style>
+</head>
+<body>
+<div class="ambient" aria-hidden="true"><div class="glow glow-a"></div><div class="glow glow-b"></div></div>
+
+<div class="app">
+  <header class="topbar">
+    <div class="brand">
+      <div class="brand-mark" aria-hidden="true">
+        <svg viewBox="0 0 36 36" fill="none">
+          <circle cx="18" cy="18" r="3.4" fill="#69e5d0" opacity=".9"/>
+          <ellipse cx="18" cy="18" rx="13" ry="5.2" stroke="#ffc96b" stroke-width="1.2" opacity=".75" transform="rotate(-28 18 18)"/>
+          <ellipse cx="18" cy="18" rx="13" ry="5.2" stroke="#a99cff" stroke-width="1.2" opacity=".6" transform="rotate(32 18 18)"/>
+          <circle cx="28.6" cy="12.2" r="1.7" fill="#ffc96b"/>
+          <circle cx="8.4" cy="23.6" r="1.5" fill="#a99cff"/>
+        </svg>
+      </div>
+      <div class="brand-copy">
+        <div class="eyebrow"><span>Circuit Lab</span><i></i><span>必修第三册 · 第 3 章</span></div>
+        <h1>电路及其应用 <span class="title-en">/ ELECTRIC CIRCUITS</span></h1>
+      </div>
+    </div>
+    <div class="top-actions">
+      <a class="ghost-btn" href="../index.html" title="返回总览" style="text-decoration:none">← 总览</a>
+      <div class="status-chip" id="topChip"><span class="chip-dot"></span>第 1 / 5 节</div>
+      <button class="ghost-btn" id="resetBtn" type="button" title="恢复本节初始状态">
+        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4.5 12a7.5 7.5 0 1 0 2.2-5.3M4.5 4.5V9H9" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        重置本节
+      </button>
+      <button class="icon-btn" id="fullBtn" type="button" aria-label="全屏显示" title="全屏显示">
+        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M8.5 4H4v4.5M15.5 4H20v4.5M8.5 20H4v-4.5M15.5 20H20v-4.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+    </div>
+  </header>
+
+  <main class="workspace">
+    <aside class="panel panel-controls" aria-label="情境与参数控制">
+      <div class="panel-head">
+        <span class="section-num">01</span>
+        <div><h2>情境与参数</h2><p>选择情境 · 调整变量</p></div>
+      </div>
+      <nav class="chapter-list" id="chapterList" aria-label="情境列表"></nav>
+      <div class="block-label"><span>本节控制 / Controls</span><span>拖动或调节</span></div>
+      <div class="controls" id="controls"></div>
+      <div class="tip-card">
+        <span>操作提示 / Tips</span>
+        <p>拖动画布彩色端点 · 调节滑块与开关 · ← → 切换情境 · 空格播放</p>
+      </div>
+    </aside>
+
+    <section class="stage-card" aria-label="课堂动态演示">
+      <canvas id="cv">你的浏览器需要支持 Canvas。</canvas>
+
+      <div class="stage-top">
+        <div class="live-badge">
+          <span class="live-dot"></span>
+          <div class="live-copy"><span>当前情境 / Scene</span><strong id="liveName">概念</strong></div>
+          <span class="live-idx" id="liveIndex">01</span>
+        </div>
+        <div class="stage-tools">
+          <button class="mini-btn" id="playBtn" type="button" hidden>▶ 播放</button>
+        </div>
+      </div>
+
+      <div class="stage-note" id="hint"></div>
+
+      <div class="definition-bar">
+        <div class="definition-mark" id="defMark">01</div>
+        <div class="definition-copy">
+          <div class="def-title">核心公式 / Key Formula</div>
+          <div class="def-formula" id="stageFormula"></div>
+          <div class="def-values" id="stageValues"></div>
+        </div>
+      </div>
+    </section>
+
+    <aside class="panel panel-details" aria-label="本节要点与实时数据">
+      <div class="panel-head">
+        <span class="section-num">02</span>
+        <div><h2>本节要点</h2><p>概念 · 公式 · 实时数据</p></div>
+      </div>
+      <div class="concept">
+        <h3 id="title"></h3>
+        <p class="desc" id="desc"></p>
+      </div>
+      <div class="equation-card">
+        <div class="eq-head"><span>公式 / Formula</span><span id="eqTag">01</span></div>
+        <div class="formula" id="formula"></div>
+      </div>
+      <div class="metric-grid" id="hud"></div>
+      <div class="note-card">
+        <div class="note-head"><span class="note-icon">i</span>观察提示</div>
+        <p id="note"></p>
+      </div>
+    </aside>
+
+    <section class="catalog" aria-label="情境图鉴">
+      <div class="catalog-head">
+        <div class="catalog-title">
+          <span class="section-num">03</span>
+          <div><h2>情境图鉴</h2><p>五个情境 · 点击切换</p></div>
+        </div>
+        <div class="catalog-hint">从欧姆定律到测量</div>
+      </div>
+      <div class="catalog-track" id="catalogTrack"></div>
+    </section>
+  </main>
+</div>
+<script>
+'use strict';
+/* ============================================================
+   基础工具
+   ============================================================ */
+const $ = s => document.querySelector(s);
+const root = document.documentElement;
+const cv = $('#cv');
+const ctx = cv.getContext('2d');
+const hudEl = $('#hud');
+const controlsEl = $('#controls');
+const SERIF = '"Cambria Math","STIX Two Math","Times New Roman",serif';
+const SANS = '"PingFang SC","Microsoft YaHei","Noto Sans SC",system-ui,sans-serif';
+const TAU = Math.PI * 2;
+
+let W = 800, H = 600, DPR = 1;
+const V = {ox: 400, oy: 300, k: 60};
+const clamp = (v, a, b) => v < a ? a : v > b ? b : v;
+const lerp = (a, b, t) => a + (b - a) * t;
+const X = x => V.ox + x * V.k;
+const Y = y => V.oy - y * V.k;
+const fmt = (n, d = 2) => {
+  if (!isFinite(n)) return '—';
+  return (Math.abs(n) < 5e-3 ? 0 : n).toFixed(d).replace('-', '−');
+};
+const deg = r => { let d = r * 180 / Math.PI % 360; return d < 0 ? d + 360 : d; };
+const len2 = (x, y) => Math.hypot(x, y);
+const easeInOut = t => t < .5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2;
+
+function setFrame(cx, cy, span) {
+  V.k = Math.min(W / span, H / (span * .62));
+  V.ox = W * cx;
+  V.oy = H * cy;
+}
+function lim() {
+  return {
+    x0: -V.ox / V.k + .25,
+    x1: (W - V.ox) / V.k - .25,
+    y0: -(H - V.oy) / V.k + .25,
+    y1: V.oy / V.k - .25
+  };
+}
+function clampPt(p) {
+  const L = lim();
+  return {x: clamp(p.x, L.x0, L.x1), y: clamp(p.y, L.y0, L.y1)};
+}
+function base() {
+  const L = lim();
+  ctx.save();
+  ctx.lineWidth = 1;
+  for (let i = Math.ceil(L.x0); i <= Math.floor(L.x1); i++) {
+    ctx.strokeStyle = i === 0 ? 'rgba(170,205,220,.15)' : 'rgba(170,205,220,.045)';
+    ctx.beginPath(); ctx.moveTo(X(i), 0); ctx.lineTo(X(i), H); ctx.stroke();
+  }
+  for (let j = Math.ceil(L.y0); j <= Math.floor(L.y1); j++) {
+    ctx.strokeStyle = j === 0 ? 'rgba(170,205,220,.15)' : 'rgba(170,205,220,.045)';
+    ctx.beginPath(); ctx.moveTo(0, Y(j)); ctx.lineTo(W, Y(j)); ctx.stroke();
+  }
+  ctx.restore();
+}
+function tscale() { return clamp(V.k / 62, .84, 1.06); }
+function math(txt, x, y, color, size = 17, align = 'center', baseline = 'middle') {
+  size = Math.max(9, size * tscale());
+  ctx.save();
+  ctx.font = 'italic ' + size + 'px ' + SERIF;
+  ctx.fillStyle = color;
+  ctx.textAlign = align;
+  ctx.textBaseline = baseline;
+  ctx.lineJoin = 'round';
+  ctx.lineWidth = Math.max(2, size * .24);
+  ctx.strokeStyle = 'rgba(5,10,18,.78)';
+  ctx.strokeText(txt, x, y);
+  ctx.fillText(txt, x, y);
+  ctx.restore();
+}
+function sans(txt, x, y, color, size = 11.5, align = 'center', baseline = 'middle') {
+  size = Math.max(8, size * tscale());
+  ctx.save();
+  ctx.font = size + 'px ' + SANS;
+  ctx.fillStyle = color;
+  ctx.textAlign = align;
+  ctx.textBaseline = baseline;
+  ctx.lineJoin = 'round';
+  ctx.lineWidth = Math.max(2, size * .24);
+  ctx.strokeStyle = 'rgba(5,10,18,.78)';
+  ctx.strokeText(txt, x, y);
+  ctx.fillText(txt, x, y);
+  ctx.restore();
+}
+function arrow(a, b, color, opt) {
+  opt = opt || {};
+  const x1 = X(a.x), y1 = Y(a.y), x2 = X(b.x), y2 = Y(b.y);
+  const dx = x2 - x1, dy = y2 - y1, L = Math.hypot(dx, dy);
+  if (L < 1) return;
+  const ux = dx / L, uy = dy / L;
+  const head = Math.min(opt.head || 11, L * .55);
+  const hw = head * .55;
+  const bx = x2 - ux * head * .88, by = y2 - uy * head * .88;
+  ctx.save();
+  ctx.globalAlpha = opt.alpha == null ? 1 : opt.alpha;
+  ctx.strokeStyle = color;
+  ctx.lineWidth = opt.w || 3;
+  ctx.lineCap = 'round';
+  ctx.lineJoin = 'round';
+  if (opt.dash) ctx.setLineDash(opt.dash);
+  if (opt.glow) { ctx.shadowColor = color; ctx.shadowBlur = opt.glow; }
+  ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(bx, by); ctx.stroke();
+  ctx.setLineDash([]);
+  ctx.fillStyle = color;
+  ctx.beginPath();
+  ctx.moveTo(x2, y2);
+  ctx.lineTo(bx - uy * hw, by + ux * hw);
+  ctx.lineTo(bx + uy * hw, by - ux * hw);
+  ctx.closePath();
+  ctx.fill();
+  ctx.restore();
+}
+function line(a, b, color, opt) {
+  opt = opt || {};
+  ctx.save();
+  ctx.globalAlpha = opt.alpha == null ? 1 : opt.alpha;
+  ctx.strokeStyle = color;
+  ctx.lineWidth = opt.w || 1.4;
+  ctx.lineCap = 'round';
+  if (opt.dash) ctx.setLineDash(opt.dash);
+  ctx.beginPath(); ctx.moveTo(X(a.x), Y(a.y)); ctx.lineTo(X(b.x), Y(b.y)); ctx.stroke();
+  ctx.restore();
+}
+function dot(p, color, r = 4) {
+  ctx.save();
+  ctx.fillStyle = color;
+  ctx.shadowColor = color;
+  ctx.shadowBlur = 10;
+  ctx.beginPath(); ctx.arc(X(p.x), Y(p.y), r, 0, TAU); ctx.fill();
+  ctx.restore();
+}
+function handle(p, color, active) {
+  const x = X(p.x), y = Y(p.y);
+  ctx.save();
+  ctx.shadowColor = 'rgba(0,0,0,.55)';
+  ctx.shadowBlur = 8;
+  ctx.beginPath(); ctx.arc(x, y, active ? 9 : 7, 0, TAU);
+  ctx.fillStyle = '#0a111d'; ctx.fill();
+  ctx.shadowBlur = 0;
+  ctx.lineWidth = 2.2;
+  ctx.strokeStyle = color;
+  ctx.stroke();
+  ctx.beginPath(); ctx.arc(x, y, 2.3, 0, TAU);
+  ctx.fillStyle = color; ctx.fill();
+  ctx.restore();
+}
+function vlabel(a, b, txt, color, off = 18, size = 18) {
+  const x1 = X(a.x), y1 = Y(a.y), x2 = X(b.x), y2 = Y(b.y);
+  const mx = (x1 + x2) / 2, my = (y1 + y2) / 2;
+  const dx = x2 - x1, dy = y2 - y1, L = Math.hypot(dx, dy) || 1;
+  let nx = -dy / L, ny = dx / L;
+  if (ny > 0) { nx = -nx; ny = -ny; }
+  off *= tscale();
+  math(txt, mx + nx * off, my + ny * off, color, size);
+}
+function segLabel(a, b, txt, color, frac, off, size) {
+  frac = frac == null ? .5 : frac;
+  off = off == null ? 16 : off;
+  size = size || 12;
+  const x1 = X(a.x), y1 = Y(a.y), x2 = X(b.x), y2 = Y(b.y);
+  const px = lerp(x1, x2, frac), py = lerp(y1, y2, frac);
+  const dx = x2 - x1, dy = y2 - y1, L = Math.hypot(dx, dy) || 1;
+  let nx = -dy / L, ny = dx / L;
+  if (ny > 0) { nx = -nx; ny = -ny; }
+  off *= tscale();
+  sans(txt, px + nx * off, py + ny * off, color, size);
+}
+function segMath(a, b, txt, color, frac, off, size) {
+  frac = frac == null ? .5 : frac;
+  off = off == null ? 16 : off;
+  size = size || 17;
+  const x1 = X(a.x), y1 = Y(a.y), x2 = X(b.x), y2 = Y(b.y);
+  const px = lerp(x1, x2, frac), py = lerp(y1, y2, frac);
+  const dx = x2 - x1, dy = y2 - y1, L = Math.hypot(dx, dy) || 1;
+  let nx = -dy / L, ny = dx / L;
+  if (ny > 0) { nx = -nx; ny = -ny; }
+  off *= tscale();
+  math(txt, px + nx * off, py + ny * off, color, size);
+}
+function angleArc(c, th1, th2, r, color, txt, size = 15) {
+  let d = ((th2 - th1 + Math.PI) % TAU + TAU) % TAU - Math.PI;
+  if (Math.abs(d) < .02) return;
+  ctx.save();
+  ctx.strokeStyle = color;
+  ctx.lineWidth = 1.8;
+  ctx.beginPath();
+  ctx.arc(X(c.x), Y(c.y), r, -th1, -(th1 + d), d > 0);
+  ctx.stroke();
+  ctx.restore();
+  if (txt) {
+    const mid = th1 + d / 2;
+    sans(txt, X(c.x) + Math.cos(mid) * (r + 22), Y(c.y) - Math.sin(mid) * (r + 22), color, size);
+  }
+}
+function rightAngle(center, u, v, s, color) {
+  const cx = X(center.x), cy = Y(center.y);
+  const ux = u.x, uy = -u.y, vx = v.x, vy = -v.y;
+  ctx.save();
+  ctx.strokeStyle = color;
+  ctx.lineWidth = 1.2;
+  ctx.setLineDash([]);
+  ctx.beginPath();
+  ctx.moveTo(cx + ux * s, cy + uy * s);
+  ctx.lineTo(cx + (ux + vx) * s, cy + (uy + vy) * s);
+  ctx.lineTo(cx + vx * s, cy + vy * s);
+  ctx.stroke();
+  ctx.restore();
+}
+function vecText(p) {
+  return '(' + fmt(p.x) + ', ' + fmt(p.y) + ')';
+}
+
+/* ============================================================
+   控件构造
+   ============================================================ */
+function addSlider(parent, label, min, max, step, value, format, onInput) {
+  const w = document.createElement('label');
+  w.className = 'ctrl';
+  const top = document.createElement('div');
+  top.className = 'ctrl-top';
+  const l = document.createElement('span');
+  l.textContent = label;
+  const b = document.createElement('b');
+  b.textContent = format(value);
+  top.append(l, b);
+  const inp = document.createElement('input');
+  inp.type = 'range';
+  inp.min = min; inp.max = max; inp.step = step; inp.value = value;
+  inp.addEventListener('input', () => {
+    const v = parseFloat(inp.value);
+    b.textContent = format(v);
+    onInput(v);
+  });
+  w.append(top, inp);
+  parent.appendChild(w);
+  return {
+    input: inp,
+    set(v, fire) {
+      inp.value = v;
+      b.textContent = format(v);
+      if (fire) onInput(v);
+    }
+  };
+}
+function addToggle(parent, label, value, onChange) {
+  const w = document.createElement('label');
+  w.className = 'switch';
+  const s = document.createElement('span');
+  s.textContent = label;
+  const inp = document.createElement('input');
+  inp.type = 'checkbox';
+  inp.checked = !!value;
+  const i = document.createElement('i');
+  inp.addEventListener('change', () => onChange(inp.checked));
+  w.append(s, inp, i);
+  parent.appendChild(w);
+  return {input: inp};
+}
+function addBtn(parent, label, fn, cls) {
+  const b = document.createElement('button');
+  b.className = 'btn ' + (cls || '');
+  b.textContent = label;
+  b.addEventListener('click', fn);
+  parent.appendChild(b);
+  return b;
+}
+function row(parent) {
+  const r = document.createElement('div');
+  r.className = 'row';
+  parent.appendChild(r);
+  return r;
+}
+/* ============================================================
+   物理绘图扩展
+   ============================================================ */
+function path(pts, color, opt) {
+  opt = opt || {};
+  if (!pts || pts.length < 2) return;
+  ctx.save();
+  ctx.globalAlpha = opt.alpha == null ? 1 : opt.alpha;
+  ctx.strokeStyle = color;
+  ctx.lineWidth = opt.w || 2;
+  ctx.lineCap = 'round';
+  ctx.lineJoin = 'round';
+  if (opt.dash) ctx.setLineDash(opt.dash);
+  if (opt.glow) { ctx.shadowColor = color; ctx.shadowBlur = opt.glow; }
+  ctx.beginPath();
+  ctx.moveTo(X(pts[0].x), Y(pts[0].y));
+  for (let i = 1; i < pts.length; i++) ctx.lineTo(X(pts[i].x), Y(pts[i].y));
+  if (opt.close) ctx.closePath();
+  if (opt.fill) { ctx.fillStyle = opt.fill; ctx.fill(); }
+  if (!opt.fillOnly) ctx.stroke();
+  ctx.restore();
+}
+function poly(pts, fill, stroke, opt) {
+  opt = opt || {};
+  opt.close = true;
+  if (fill) opt.fill = fill;
+  path(pts, stroke || 'transparent', opt);
+}
+function rect(a, b, fill, stroke, opt) {
+  opt = opt || {};
+  const x0 = Math.min(a.x, b.x), x1 = Math.max(a.x, b.x);
+  const y0 = Math.min(a.y, b.y), y1 = Math.max(a.y, b.y);
+  const p = {x: x0, y: y0}, q = {x: x1, y: y1};
+  ctx.save();
+  ctx.globalAlpha = opt.alpha == null ? 1 : opt.alpha;
+  ctx.beginPath();
+  ctx.rect(X(p.x), Y(q.y), (q.x - p.x) * V.k, (q.y - p.y) * V.k);
+  if (fill) { ctx.fillStyle = fill; ctx.fill(); }
+  if (stroke) {
+    ctx.strokeStyle = stroke;
+    ctx.lineWidth = opt.w || 1.6;
+    if (opt.dash) ctx.setLineDash(opt.dash);
+    ctx.stroke();
+  }
+  ctx.restore();
+}
+function circleAt(c, r, fill, stroke, opt) {
+  opt = opt || {};
+  ctx.save();
+  ctx.globalAlpha = opt.alpha == null ? 1 : opt.alpha;
+  ctx.beginPath();
+  ctx.arc(X(c.x), Y(c.y), Math.abs(r * V.k), 0, TAU);
+  if (fill) { ctx.fillStyle = fill; ctx.fill(); }
+  if (stroke) {
+    ctx.strokeStyle = stroke;
+    ctx.lineWidth = opt.w || 1.6;
+    if (opt.dash) ctx.setLineDash(opt.dash);
+    ctx.stroke();
+  }
+  ctx.restore();
+}
+function spring(a, b, coils, color, opt) {
+  opt = opt || {};
+  const n = coils || 9, amp = (opt.amp == null ? .16 : opt.amp);
+  const dx = b.x - a.x, dy = b.y - a.y;
+  const L = Math.hypot(dx, dy) || 1;
+  const ux = dx / L, uy = dy / L, nx = -uy, ny = ux;
+  const pts = [{x: a.x, y: a.y}];
+  const lead = L * .12;
+  pts.push({x: a.x + ux * lead, y: a.y + uy * lead});
+  for (let i = 0; i < n; i++) {
+    const t = lead + (L - 2 * lead) * (i + .5) / n;
+    const s = (i % 2 ? -1 : 1) * amp;
+    pts.push({x: a.x + ux * t + nx * s, y: a.y + uy * t + ny * s});
+  }
+  pts.push({x: b.x - ux * lead, y: b.y - uy * lead});
+  pts.push({x: b.x, y: b.y});
+  path(pts, color, {w: opt.w || 1.8, alpha: opt.alpha, glow: opt.glow});
+}
+function ground(y, color, opt) {
+  opt = opt || {};
+  const L = lim();
+  const c = color || 'rgba(150,190,205,.55)';
+  line({x: L.x0, y: y}, {x: L.x1, y: y}, c, {w: opt.w || 1.8});
+  ctx.save();
+  ctx.strokeStyle = c;
+  ctx.globalAlpha = .5;
+  ctx.lineWidth = 1;
+  const y0 = Y(y);
+  for (let x = 0; x < W; x += 9) {
+    ctx.beginPath();
+    ctx.moveTo(x, y0 + 1);
+    ctx.lineTo(x - 6, y0 + 7);
+    ctx.stroke();
+  }
+  ctx.restore();
+}
+function addSeg(parent, items, idx, onPick) {
+  const box = document.createElement('div');
+  box.className = 'seg';
+  const btns = items.map((txt, i) => {
+    const b = document.createElement('button');
+    b.type = 'button';
+    b.textContent = txt;
+    if (i === idx) b.className = 'on';
+    b.addEventListener('click', () => {
+      btns.forEach((x, j) => x.classList.toggle('on', j === i));
+      onPick(i);
+    });
+    box.appendChild(b);
+    return b;
+  });
+  parent.appendChild(box);
+  return {
+    set(i) { btns.forEach((x, j) => x.classList.toggle('on', j === i)); }
+  };
+}
+
+const MODULES = [];
+
+/* ============================================================
+   必修第三册 · 第 3 章 电路及其应用
+   ============================================================ */
+(function () {
+
+const RHO = [
+  {n: '铜', rho: 1.7e-8, c: '#ffb27a'},
+  {n: '铝', rho: 2.8e-8, c: '#c9d4dc'},
+  {n: '镍铬合金', rho: 1.1e-6, c: '#a8b8c8'}
+];
+
+function f1(v) {
+  return (Math.abs(v) < 5e-2 ? 0 : v).toFixed(1);
+}
+function f2(v) {
+  const s = (Math.abs(v) < 5e-3 ? 0 : v).toFixed(2);
+  return s.indexOf('.') >= 0 ? s.replace(/0+$/, '').replace(/\.$/, '') : s;
+}
+function fR(v) {
+  if (!isFinite(v)) return '—';
+  if (v >= 100) return v.toFixed(0);
+  if (v >= 1) return v.toFixed(2);
+  return v.toFixed(3);
+}
+function wire(a, b) {
+  line(a, b, 'rgba(200,225,235,.5)', {w: 1.7});
+}
+function cellV(x, y) {
+  line({x: x - .3, y: y + .14}, {x: x + .3, y: y + .14}, '#e8f2f4', {w: 2.6});
+  line({x: x - .15, y: y - .16}, {x: x + .15, y: y - .16}, '#e8f2f4', {w: 2.6});
+}
+function cellH(x, y) {
+  line({x: x - .16, y: y - .32}, {x: x - .16, y: y + .32}, '#e8f2f4', {w: 2.6});
+  line({x: x + .14, y: y - .16}, {x: x + .14, y: y + .16}, '#e8f2f4', {w: 2.6});
+}
+function resBox(cx, cy, w, h, label, color) {
+  rect({x: cx - w / 2, y: cy - h / 2}, {x: cx + w / 2, y: cy + h / 2},
+    'rgba(11,24,40,.95)', color, {w: 1.7});
+  sans(label, X(cx), Y(cy), color, 11.5);
+}
+function meter(c, r, label, color) {
+  circleAt(c, r, 'rgba(11,24,40,.95)', color, {w: 1.8});
+  sans(label, X(c.x), Y(c.y) + 1, color, 14);
+}
+
+/* ---------- 01 欧姆定律与 U-I 图 ---------- */
+MODULES.push({
+  key: 'ohm', tab: '01', name: '欧姆定律', en: 'OHM LAW', blurb: '电压与电流',
+  accent: '#5eead4', rgb: '94,234,212',
+  hint: '调节电压与电阻，观察电流表读数与 U-I 图工作点',
+  playable: true,
+  state: {R: 6, U: 6, phase: 0, playing: true, showGraph: true},
+  reset() { const s = this.state; s.R = 6; s.U = 6; s.phase = 0; s.playing = true; s.showGraph = true; },
+  perimeter() {
+    return [{x: -6, y: -1.7}, {x: -1.4, y: -1.7}, {x: -1.4, y: 1.7}, {x: -6, y: 1.7}, {x: -6, y: -1.7}];
+  },
+  at(f) {
+    const p = this.perimeter();
+    let total = 0, segs = [];
+    for (let i = 1; i < p.length; i++) {
+      const L = Math.hypot(p[i].x - p[i - 1].x, p[i].y - p[i - 1].y);
+      segs.push(L); total += L;
+    }
+    let d = ((f % 1) + 1) % 1 * total;
+    for (let i = 0; i < segs.length; i++) {
+      if (d <= segs[i]) {
+        const t = segs[i] < 1e-6 ? 0 : d / segs[i];
+        return {x: p[i].x + (p[i + 1].x - p[i].x) * t, y: p[i].y + (p[i + 1].y - p[i].y) * t};
+      }
+      d -= segs[i];
+    }
+    return p[0];
+  },
+  meta() {
+    return {
+      title: '欧姆定律：I = U / R',
+      desc: '导体中的电流与两端电压成正比、与电阻成反比。调节电压和电阻，观察电流读数与 U-I 图上的工作点怎样移动，理解图线的斜率就是电阻，并注意电压、电流、电阻的单位。',
+      formula: 'I = U / R，U = IR',
+      note: '同一导体的 U-I 图是<b>过原点的直线</b>，斜率等于电阻。电阻越大，直线越陡。'
+    };
+  },
+  draw(dt) {
+    const s = this.state;
+    if (s.playing) s.phase += dt * .3;
+    setFrame(.5, .55, 14);
+    base();
+    const I = s.U / s.R;
+
+    wire({x: -6, y: -1.7}, {x: -1.4, y: -1.7});
+    wire({x: -1.4, y: -1.7}, {x: -1.4, y: 1.7});
+    wire({x: -1.4, y: 1.7}, {x: -6, y: 1.7});
+    wire({x: -6, y: 1.7}, {x: -6, y: .16});
+    wire({x: -6, y: -.16}, {x: -6, y: -1.7});
+    cellV(-6, 0);
+    resBox(-3.7, 1.7, 1.3, .5, 'R', '#5eead4');
+    wire({x: -4.35, y: 1.7}, {x: -3.05, y: 1.7});
+
+    for (let i = 0; i < 14; i++) {
+      const p = this.at(s.phase + i / 14);
+      if (Math.abs(p.x + 6) < .22 && Math.abs(p.y) < .3) continue;
+      dot(p, 'rgba(126,236,214,.9)', 3);
+    }
+    sans('I', X(-1.4) + 12, Y(.2), '#8fe9d8', 13, 'left');
+    sans('U = ' + f1(s.U) + ' V', X(-6) - 14, Y(-.75), '#dfe9ee', 12, 'right');
+    sans('R = ' + f1(s.R) + ' Ω', X(-3.7), Y(1.7) - 22, '#8fe9d8', 12);
+
+    if (s.showGraph) {
+      const x0 = .7, x1 = 6.6, y0 = -2.4, y1 = 2.6;
+      line({x: x0, y: y0}, {x: x1, y: y0}, 'rgba(200,225,235,.45)', {w: 1.3});
+      line({x: x0, y: y0}, {x: x0, y: y1}, 'rgba(200,225,235,.45)', {w: 1.3});
+      arrow({x: x1 - .4, y: y0}, {x: x1, y: y0}, 'rgba(200,225,235,.55)', {w: 1.2, head: 8});
+      arrow({x: x0, y: y1 - .4}, {x: x0, y: y1}, 'rgba(200,225,235,.55)', {w: 1.2, head: 8});
+      sans('I / A', X(x1) - 2, Y(y0) + 16, 'rgba(180,210,220,.8)', 10.5, 'right');
+      sans('U / V', X(x0) - 8, Y(y1) + 10, 'rgba(180,210,220,.8)', 10.5, 'right');
+
+      const gx = i => x0 + i / 4 * (x1 - x0);
+      const gy = u => y0 + u / 12 * (y1 - y0);
+      for (let i = 1; i <= 4; i++) {
+        line({x: gx(i), y: y0}, {x: gx(i), y: y0 - .09}, 'rgba(200,225,235,.4)', {w: 1});
+        sans(String(i), X(gx(i)), Y(y0) + 14, 'rgba(170,200,212,.7)', 9.5);
+      }
+      for (let u = 3; u <= 12; u += 3) {
+        line({x: x0 - .1, y: gy(u)}, {x: x0, y: gy(u)}, 'rgba(200,225,235,.4)', {w: 1});
+        sans(String(u), X(x0) - 8, Y(gy(u)), 'rgba(170,200,212,.7)', 9.5, 'right');
+      }
+      const ie = Math.min(4, 12 / s.R);
+      line({x: gx(0), y: gy(0)}, {x: gx(ie), y: gy(ie * s.R)}, 'rgba(94,234,212,.85)', {w: 2.4, glow: 6});
+      const pu = s.U, pi = I;
+      line({x: gx(pi), y: gy(0)}, {x: gx(pi), y: gy(pu)}, 'rgba(255,255,255,.2)', {w: 1, dash: [4, 4]});
+      line({x: gx(0), y: gy(pu)}, {x: gx(pi), y: gy(pu)}, 'rgba(255,255,255,.2)', {w: 1, dash: [4, 4]});
+      dot({x: gx(pi), y: gy(pu)}, '#fff1cf', 5);
+      sans('斜率 = R', X(x1) - 14, Y(y1) - 8, 'rgba(160,220,210,.7)', 10.5, 'right');
+      sans('工作点 (' + f2(pi) + ' A, ' + f1(pu) + ' V)', X(x0) + 10, Y(y1) - 12, 'rgba(200,225,235,.8)', 10.5, 'left');
+    }
+  },
+  hud() {
+    const s = this.state;
+    return [
+      {k: '电压 U', v: f1(s.U) + ' V'},
+      {k: '电阻 R', v: f1(s.R) + ' Ω'},
+      {k: '电流 I', v: f2(s.U / s.R) + ' A', hi: true},
+      {k: '电功率 P', v: f2(s.U * s.U / s.R) + ' W', hi: true},
+      {k: 'U-I 斜率', v: f1(s.R) + ' Ω'}
+    ];
+  },
+  panel(el) {
+    const s = this.state;
+    addSlider(el, '电压 U / V', 2, 12, .5, s.U, v => f1(v), v => s.U = v);
+    addSlider(el, '电阻 R / Ω', 2, 20, .5, s.R, v => f1(v), v => s.R = v);
+    addToggle(el, '显示 U-I 图', s.showGraph, v => s.showGraph = v);
+    addToggle(el, '电流方向动画', s.playing, v => s.playing = v);
+    addBtn(el, '恢复默认', () => { s.U = 6; s.R = 6; }, 'ghost');
+  },
+  togglePlay() { this.state.playing = !this.state.playing; },
+  playLabel() { return this.state.playing ? '⏸ 暂停' : '▶ 播放'; }
+});
+
+/* ---------- 02 串联与并联 ---------- */
+MODULES.push({
+  key: 'combo', tab: '02', name: '串并联', en: 'SERIES & PARALLEL', blurb: '电流与电压分配',
+  accent: '#6cb6ff', rgb: '108,182,255',
+  hint: '切换串联与并联，调节两个电阻，比较总电阻和电流分配',
+  state: {mode: 0, R1: 6, R2: 3, U: 6, showU: true},
+  reset() { const s = this.state; s.mode = 0; s.R1 = 6; s.R2 = 3; s.U = 6; s.showU = true; },
+  meta() {
+    return {
+      title: '串联分压，并联分流',
+      desc: '串联电路中电流处处相等，电压按电阻大小分配；并联电路中各支路电压相等，电流按电阻的反比分配。切换两种连接方式，调节两个电阻，比较总电阻、总电流与各元件上的电压和电流。',
+      formula: 'R<sub>串</sub> = R<sub>1</sub> + R<sub>2</sub>，1/R<sub>并</sub> = 1/R<sub>1</sub> + 1/R<sub>2</sub>',
+      note: '串联总电阻<b>大于</b>任一分电阻；并联总电阻<b>小于</b>任一分电阻。并联支路越多，总电阻越小。'
+    };
+  },
+  vals() {
+    const s = this.state;
+    if (s.mode === 0) {
+      const R = s.R1 + s.R2, I = s.U / R;
+      return {R, I, I1: I, I2: I, U1: I * s.R1, U2: I * s.R2};
+    }
+    const R = s.R1 * s.R2 / (s.R1 + s.R2);
+    return {R, I: s.U / R, I1: s.U / s.R1, I2: s.U / s.R2, U1: s.U, U2: s.U};
+  },
+  draw() {
+    const s = this.state;
+    setFrame(.5, .55, 14);
+    base();
+    const v = this.vals();
+
+    if (s.mode === 0) {
+      wire({x: -5.4, y: -1.6}, {x: -5.4, y: 1.7});
+      wire({x: -5.4, y: 1.7}, {x: 5, y: 1.7});
+      wire({x: 5, y: 1.7}, {x: 5, y: -1.6});
+      wire({x: 5, y: -1.6}, {x: -5.4, y: -1.6});
+      cellV(-5.4, 0);
+      resBox(-2.4, 1.7, 1.4, .52, 'R₁', '#6cb6ff');
+      resBox(1.6, 1.7, 1.4, .52, 'R₂', '#b49cff');
+      sans('I', X(-3.9), Y(1.7) - 8, '#8fe9d8', 12);
+      sans('I', X(0), Y(1.7) - 8, '#8fe9d8', 12);
+      sans('I', X(5) + 14, Y(0), '#8fe9d8', 12, 'left');
+      if (s.showU) {
+        sans('U₁ = ' + f2(v.U1) + ' V', X(-2.4), Y(1.7) + 42, '#a8d0ff', 11.5);
+        sans('U₂ = ' + f2(v.U2) + ' V', X(1.6), Y(1.7) + 42, '#c8baff', 11.5);
+      }
+      sans('U = ' + f1(s.U) + ' V', X(-5.4) - 12, Y(-.9), '#dfe9ee', 12, 'right');
+      sans('串联：电流相同，电压相加', X(0), Y(-2.8), 'rgba(190,215,225,.8)', 12);
+    } else {
+      wire({x: -5.4, y: -1.7}, {x: -5.4, y: 1.7});
+      wire({x: -5.4, y: 1.7}, {x: 5, y: 1.7});
+      wire({x: -5.4, y: -1.7}, {x: 5, y: -1.7});
+      wire({x: 5, y: 1.7}, {x: 5, y: -1.7});
+      cellV(-5.4, 0);
+      resBox(-1, 1.7, 1.4, .52, 'R₁', '#6cb6ff');
+      resBox(-1, -1.7, 1.4, .52, 'R₂', '#b49cff');
+      sans('I₁', X(-1), Y(1.7) - 20, '#a8d0ff', 11.5);
+      sans('I₂', X(-1), Y(-1.7) + 20, '#c8baff', 11.5);
+      sans('I', X(-4.4), Y(-1.7) + 18, '#8fe9d8', 12);
+      if (s.showU) {
+        sans('U₁ = ' + f2(v.U1) + ' V', X(-1), Y(1.7) + 42, '#a8d0ff', 11.5);
+        sans('U₂ = ' + f2(v.U2) + ' V', X(-1), Y(-1.7) - 42, '#c8baff', 11.5);
+      }
+      sans('U = ' + f1(s.U) + ' V', X(-5.4) - 12, Y(-.9), '#dfe9ee', 12, 'right');
+      sans('并联：电压相同，电流相加', X(0), Y(-3.0), 'rgba(190,215,225,.8)', 12);
+    }
+    sans('R总 = ' + f2(v.R) + ' Ω', X(4.9), Y(3.35), '#ffd79a', 14, 'right');
+    sans('I总 = ' + f2(v.I) + ' A', X(4.9), Y(2.8), '#8fe9d8', 13, 'right');
+  },
+  hud() {
+    const s = this.state, v = this.vals();
+    return [
+      {k: '总电阻', v: f2(v.R) + ' Ω', hi: true},
+      {k: '总电流', v: f2(v.I) + ' A', hi: true},
+      {k: 'R₁ 上电压', v: f2(v.U1) + ' V'},
+      {k: 'R₂ 上电压', v: f2(v.U2) + ' V'},
+      {k: '总功率', v: f2(s.U * v.I) + ' W'}
+    ];
+  },
+  panel(el) {
+    const s = this.state;
+    addSeg(el, ['串联', '并联'], s.mode, i => s.mode = i);
+    addSlider(el, '电阻 R₁ / Ω', 1, 20, .5, s.R1, v => f1(v), v => s.R1 = v);
+    addSlider(el, '电阻 R₂ / Ω', 1, 20, .5, s.R2, v => f1(v), v => s.R2 = v);
+    addSlider(el, '电源电压 U / V', 2, 12, .5, s.U, v => f1(v), v => s.U = v);
+    addToggle(el, '显示电压标注', s.showU, v => s.showU = v);
+  }
+});
+
+/* ---------- 03 电阻定律 ---------- */
+MODULES.push({
+  key: 'resistivity', tab: '03', name: '电阻定律', en: 'RESISTIVITY', blurb: '材料与尺寸',
+  accent: '#ffb27a', rgb: '255,178,122',
+  hint: '切换材料，改变长度与导线直径，观察电阻的变化',
+  state: {mat: 1, L: 1.0, d: 1.0, showI: true},
+  reset() { const s = this.state; s.mat = 1; s.L = 1.0; s.d = 1.0; s.showI = true; },
+  meta() {
+    return {
+      title: '电阻定律：R = ρL / S',
+      desc: '导体的电阻由材料、长度和横截面积共同决定。改变材料、长度与导线直径，观察电阻的变化，理解公式中每个量的含义；注意横截面积要用平方米，直径要先换算成米再求面积。',
+      formula: 'R = ρL / S，S = πd<sup>2</sup>/4',
+      note: '同种材料、粗细相同时，<b>越长电阻越大</b>；长度相同时，<b>越粗电阻越小</b>。电阻率由材料本身决定。'
+    };
+  },
+  area() { return Math.PI * Math.pow(this.state.d, 2) / 4; },
+  res() { return RHO[this.state.mat].rho * this.state.L / (this.area() * 1e-6); },
+  draw() {
+    const s = this.state;
+    setFrame(.5, .55, 14);
+    base();
+    const m = RHO[s.mat];
+    const len = 2.0 + s.L * 2.2;
+    const th = .12 + s.d * .26;
+    const x0 = -len / 2, x1 = len / 2;
+
+    circleAt({x: x0, y: 0}, th, 'rgba(18,32,44,.9)', m.c, {w: 1.6});
+    circleAt({x: x1, y: 0}, th, 'rgba(18,32,44,.9)', m.c, {w: 1.6});
+    rect({x: x0, y: -th}, {x: x1, y: th}, 'rgba(30,44,56,.55)', m.c, {w: 1.4});
+
+    if (s.showI) {
+      for (let i = 0; i < 5; i++) {
+        const xx = x0 + (i + .5) * len / 5;
+        arrow({x: xx - .18, y: 0}, {x: xx + .18, y: 0}, 'rgba(123,224,192,.9)', {w: 1.4, head: 7});
+      }
+    }
+
+    line({x: x0, y: -1.15}, {x: x1, y: -1.15}, 'rgba(255,255,255,.3)', {w: 1});
+    line({x: x0, y: -1.08}, {x: x0, y: -1.22}, 'rgba(255,255,255,.45)', {w: 1});
+    line({x: x1, y: -1.08}, {x: x1, y: -1.22}, 'rgba(255,255,255,.45)', {w: 1});
+    sans('L = ' + f2(s.L) + ' m', X(0), Y(-1.42), 'rgba(210,228,236,.85)', 12);
+
+    circleAt({x: 0, y: -2.55}, .62, 'rgba(30,44,56,.5)', m.c, {w: 1.4});
+    arrow({x: -.62, y: -2.55}, {x: .62, y: -2.55}, 'rgba(255,255,255,.5)', {w: 1.2, head: 7});
+    arrow({x: .62, y: -2.55}, {x: -.62, y: -2.55}, 'rgba(255,255,255,.5)', {w: 1.2, head: 7});
+    sans('d = ' + f2(s.d) + ' mm', X(0), Y(-3.32), 'rgba(210,228,236,.8)', 11);
+
+    sans(m.n, X(-4.6), Y(2.9), m.c, 15, 'left');
+    sans('ρ = ' + m.rho.toExponential(1).replace('e-', '×10⁻').replace('e+', '×10'), X(-4.6), Y(2.35), 'rgba(190,215,225,.75)', 11, 'left');
+    sans('R = ' + fR(this.res()) + ' Ω', X(0), Y(2.35), '#ffd79a', 17);
+  },
+  hud() {
+    const s = this.state, m = RHO[s.mat];
+    return [
+      {k: '材料', v: m.n + ' 导线'},
+      {k: '电阻率 ρ', v: m.rho.toExponential(1) + ' Ω·m', hi: true},
+      {k: '长度 L', v: f2(s.L) + ' m'},
+      {k: '横截面积 S', v: f2(this.area()) + ' mm²'},
+      {k: '电阻 R', v: fR(this.res()) + ' Ω', hi: true}
+    ];
+  },
+  panel(el) {
+    const s = this.state;
+    addSeg(el, ['铜', '铝', '镍铬'], s.mat, i => s.mat = i);
+    addSlider(el, '长度 L / m', .2, 2, .1, s.L, v => f2(v), v => s.L = v);
+    addSlider(el, '直径 d / mm', .2, 1.5, .1, s.d, v => f2(v), v => s.d = v);
+    addToggle(el, '显示电流方向', s.showI, v => s.showI = v);
+    addBtn(el, '恢复默认尺寸', () => { s.L = 1; s.d = 1; }, 'ghost');
+  }
+});
+
+/* ---------- 04 电表改装 ---------- */
+MODULES.push({
+  key: 'meter', tab: '04', name: '电表改装', en: 'METER CONVERSION', blurb: '分压与分流',
+  accent: '#b49cff', rgb: '180,156,255',
+  hint: '切换电压表与电流表，调节量程，观察所需的改装电阻',
+  state: {mode: 0, Ig: 5, Rg: 50, range: 3, showPath: true},
+  reset() { const s = this.state; s.mode = 0; s.Ig = 5; s.Rg = 50; s.range = 3; s.showPath = true; },
+  meta() {
+    return {
+      title: '表头改装成电压表或电流表',
+      desc: '表头只能测量很小的电流和电压。串联一个大电阻可以分压，把表头改装成电压表；并联一个小电阻可以分流，把表头改装成电流表。切换两种改装方式，调节量程，观察所需电阻与量程的关系。',
+      formula: '电压表 R<sub>串</sub> = U/I<sub>g</sub> − R<sub>g</sub>；电流表 R<sub>并</sub> = I<sub>g</sub>R<sub>g</sub>/(I − I<sub>g</sub>)',
+      note: '改装后表头的<b>满偏电流 Ig 不变</b>。电压表内阻很大，电流表内阻很小，这是它们接入电路的方式决定的。'
+    };
+  },
+  rs() {
+    const s = this.state;
+    if (s.mode === 0) return Math.max(0, s.range / (s.Ig * 1e-3) - s.Rg);
+    const den = s.range - s.Ig * 1e-3;
+    return den > 0 ? s.Ig * 1e-3 * s.Rg / den : 0;
+  },
+  draw() {
+    const s = this.state;
+    setFrame(.5, .55, 14);
+    base();
+    const R = this.rs();
+
+    if (s.mode === 0) {
+      wire({x: -4.9, y: .9}, {x: -2, y: .9});
+      wire({x: -.6, y: .9}, {x: 1.35, y: .9});
+      wire({x: 2.25, y: .9}, {x: 4.9, y: .9});
+      resBox(-1.3, .9, 1.4, .5, 'R串', '#b49cff');
+      meter({x: 1.8, y: .9}, .45, 'G', '#ffd79a');
+      sans('Rg = ' + s.Rg.toFixed(0) + ' Ω', X(1.8), Y(.9) + 31, 'rgba(210,228,236,.85)', 9.5);
+      sans('R串 = ' + fR(R) + ' Ω', X(-1.3), Y(.9) - 28, 'rgba(205,190,255,.9)', 10);
+      dot({x: -4.9, y: .9}, '#dfe9ee', 4);
+      dot({x: 4.9, y: .9}, '#dfe9ee', 4);
+      sans('+', X(-4.9) - 14, Y(.9), '#ff8f6b', 14);
+      sans('−', X(4.9) + 14, Y(.9), '#6cb6ff', 14);
+      arrow({x: -4.9, y: 2.0}, {x: 4.9, y: 2.0}, 'rgba(255,215,154,.55)', {w: 1.4, head: 9, dash: [5, 4]});
+      sans('U = 量程 ' + f1(s.range) + ' V', X(0), Y(2.32), '#ffd79a', 12);
+      sans('串联分压：U = Ig(Rg + R串)', X(0), Y(-1.7), 'rgba(200,225,235,.8)', 12);
+    } else {
+      wire({x: -4.9, y: 0}, {x: -1.2, y: 0});
+      wire({x: 2.8, y: 0}, {x: 4.9, y: 0});
+      wire({x: -1.2, y: 0}, {x: -1.2, y: 1.2});
+      wire({x: -1.2, y: 1.2}, {x: .55, y: 1.2});
+      wire({x: 1.45, y: 1.2}, {x: 2.8, y: 1.2});
+      wire({x: 2.8, y: 1.2}, {x: 2.8, y: 0});
+      wire({x: -1.2, y: 0}, {x: -1.2, y: -1.2});
+      wire({x: -1.2, y: -1.2}, {x: .1, y: -1.2});
+      wire({x: 1.7, y: -1.2}, {x: 2.8, y: -1.2});
+      wire({x: 2.8, y: -1.2}, {x: 2.8, y: 0});
+      meter({x: 1, y: 1.2}, .45, 'G', '#ffd79a');
+      sans('Rg', X(1), Y(1.2) + 24, 'rgba(210,228,236,.7)', 9);
+      resBox(.9, -1.2, 1.6, .46, 'R并', '#b49cff');
+      dot({x: -4.9, y: 0}, '#dfe9ee', 4);
+      dot({x: 4.9, y: 0}, '#dfe9ee', 4);
+      dot({x: -1.2, y: 0}, '#dfe9ee', 3.4);
+      dot({x: 2.8, y: 0}, '#dfe9ee', 3.4);
+      sans('I = 量程 ' + f1(s.range) + ' A', X(0), Y(-2.25), '#ffd79a', 12);
+      sans('并联分流：IgRg = (I − Ig)R并', X(0), Y(-2.8), 'rgba(200,225,235,.8)', 11.5);
+    }
+
+    sans('表头：满偏电流 Ig = ' + f1(s.Ig) + ' mA', X(-4.9), Y(3.1), 'rgba(200,225,235,.8)', 11.5, 'left');
+    sans('改装电阻 R = ' + fR(R) + ' Ω', X(-4.9), Y(2.6), 'rgba(200,225,235,.8)', 11.5, 'left');
+  },
+  hud() {
+    const s = this.state;
+    const n = s.mode === 0 ? s.range / (s.Ig * 1e-3 * s.Rg) : s.range / (s.Ig * 1e-3);
+    return [
+      {k: '满偏电流 Ig', v: f1(s.Ig) + ' mA'},
+      {k: '表头内阻 Rg', v: s.Rg.toFixed(0) + ' Ω'},
+      {k: '改装电阻', v: fR(this.rs()) + ' Ω', hi: true},
+      {k: '量程', v: f1(s.range) + (s.mode === 0 ? ' V' : ' A'), hi: true},
+      {k: '量程扩大倍数', v: n.toFixed(0) + ' 倍'}
+    ];
+  },
+  panel(el) {
+    const s = this.state;
+    addSeg(el, ['电压表', '电流表'], s.mode, i => s.mode = i);
+    addSlider(el, '满偏电流 Ig / mA', 1, 10, .5, s.Ig, v => f1(v), v => s.Ig = v);
+    addSlider(el, '表头内阻 Rg / Ω', 20, 100, 5, s.Rg, v => v.toFixed(0), v => s.Rg = v);
+    addSlider(el, '目标量程 / (V 或 A)', 1, 15, .5, s.range, v => f1(v), v => s.range = v);
+    addToggle(el, '显示分流/分压路径', s.showPath, v => s.showPath = v);
+  }
+});
+
+/* ---------- 05 伏安法测电阻 ---------- */
+MODULES.push({
+  key: 'voltammetry', tab: '05', name: '伏安法', en: 'VOLT-AMMETER', blurb: '内接与外接',
+  accent: '#ffd166', rgb: '255,209,102',
+  hint: '切换电流表外接与内接，比较测量值与真实值的误差',
+  state: {mode: 0, Rx: 20, RA: 1, RV: 3000, U0: 6, showErr: true},
+  reset() { const s = this.state; s.mode = 0; s.Rx = 20; s.RA = 1; s.RV = 3000; s.U0 = 6; s.showErr = true; },
+  meta() {
+    return {
+      title: '伏安法测电阻的系统误差',
+      desc: '用电压表和电流表测量电阻时，电表内阻会给结果带来系统误差。切换电流表外接与内接，比较测量值、真实值与相对误差，理解大电阻用内接、小电阻用外接的选用原则，并学会分析误差来源。',
+      formula: 'R<sub>测</sub> = U/I，外接 R<sub>测</sub> < R<sub>x</sub>，内接 R<sub>测</sub> > R<sub>x</sub>',
+      note: '外接时电压表<b>分流</b>，测量值偏小；内接时电流表<b>分压</b>，测量值偏大。待测电阻远大于电流表内阻时用内接。'
+    };
+  },
+  vals() {
+    const s = this.state;
+    const Rm = s.mode === 0 ? s.Rx * s.RV / (s.Rx + s.RV) : s.Rx + s.RA;
+    return {Rm, I: s.U0 / Rm, U: s.U0, err: (Rm - s.Rx) / s.Rx * 100};
+  },
+  draw() {
+    const s = this.state;
+    setFrame(.5, .55, 14);
+    base();
+    const v = this.vals();
+
+    wire({x: -4.9, y: -1.9}, {x: -4.9, y: 1.4});
+    wire({x: -4.9, y: 1.4}, {x: 4.9, y: 1.4});
+    wire({x: 4.9, y: 1.4}, {x: 4.9, y: -1.9});
+    wire({x: 4.9, y: -1.9}, {x: -4.9, y: -1.9});
+    cellH(0, -1.9);
+    sans('6 V', X(0), Y(-1.9) - 30, '#dfe9ee', 11);
+
+    meter({x: -2.4, y: 1.4}, .44, 'A', '#8fe9d8');
+    resBox(2.3, 1.4, 1.3, .52, 'Rx', '#ffd166');
+    wire({x: -1.96, y: 1.4}, {x: 1.65, y: 1.4});
+    wire({x: 2.95, y: 1.4}, {x: 4.9, y: 1.4});
+
+    const vL = s.mode === 0 ? 1.0 : -3.25;
+    const vR = 4.1;
+    wire({x: vL, y: 1.4}, {x: vL, y: 2.55});
+    wire({x: vL, y: 2.55}, {x: vR, y: 2.55});
+    wire({x: vR, y: 2.55}, {x: vR, y: 1.4});
+    meter({x: (vL + vR) / 2, y: 2.55}, .42, 'V', '#ffb27a');
+    dot({x: vL, y: 1.4}, '#dfe9ee', 3.2);
+    dot({x: vR, y: 1.4}, '#dfe9ee', 3.2);
+
+    sans(s.mode === 0 ? '电流表外接' : '电流表内接', X(-4.9), Y(3.35), 'rgba(200,225,235,.9)', 13, 'left');
+    sans('U = ' + f2(v.U) + ' V', X(-4.6), Y(-3.0), 'rgba(160,200,255,.85)', 11.5, 'left');
+    sans('I = ' + f1(v.I * 1000) + ' mA', X(-4.6), Y(-3.5), 'rgba(126,236,214,.85)', 11.5, 'left');
+    if (s.showErr) {
+      sans('R测 = ' + f2(v.Rm) + ' Ω', X(4.6), Y(-3.0), '#ffd79a', 12.5, 'right');
+      sans('误差 ' + f1(v.err) + ' %', X(4.6), Y(-3.5), v.err > 0 ? '#ff9f8a' : '#8fe9d8', 12.5, 'right');
+    }
+  },
+  hud() {
+    const s = this.state, v = this.vals();
+    return [
+      {k: '电压表读数 U', v: f2(v.U) + ' V'},
+      {k: '电流表读数 I', v: f1(v.I * 1000) + ' mA'},
+      {k: '测量值 R测', v: f2(v.Rm) + ' Ω', hi: true},
+      {k: '相对误差', v: f1(v.err) + ' %', hi: true},
+      {k: '真实值 Rx', v: s.Rx.toFixed(0) + ' Ω'}
+    ];
+  },
+  panel(el) {
+    const s = this.state;
+    addSeg(el, ['外接', '内接'], s.mode, i => s.mode = i);
+    addSlider(el, '待测电阻 Rx / Ω', 5, 100, 1, s.Rx, v => v.toFixed(0), v => s.Rx = v);
+    addSlider(el, '电流表内阻 RA / Ω', .5, 5, .5, s.RA, v => f1(v), v => s.RA = v);
+    addSlider(el, '电压表内阻 RV / Ω', 500, 5000, 100, s.RV, v => v.toFixed(0), v => s.RV = v);
+    addToggle(el, '显示误差分析', s.showErr, v => s.showErr = v);
+  }
+});
+
+})();
+
+
+/* ============================================================
+   引擎
+   ============================================================ */
+const chapterListEl = $('#chapterList');
+const catalogEl = $('#catalogTrack');
+let curIdx = 0, cur = null, hoverId = null, dragId = null, orbitId = null, orbitLast = null;
+
+MODULES.forEach((m, i) => {
+  m.en = m.en || '';
+  m.blurb = m.blurb || '';
+
+  const b = document.createElement('button');
+  b.type = 'button';
+  b.className = 'chapter-item';
+  b.style.setProperty('--tc', m.accent);
+  b.style.setProperty('--tc-rgb', m.rgb);
+  b.innerHTML = '<span class="ci-num">' + m.tab + '</span>' +
+    '<span class="ci-name">' + m.name + '</span>' +
+    '<span class="ci-en">' + m.en + '</span>';
+  b.addEventListener('click', () => activate(i));
+  chapterListEl.appendChild(b);
+
+  const c = document.createElement('button');
+  c.type = 'button';
+  c.className = 'catalog-card';
+  c.style.setProperty('--tc', m.accent);
+  c.style.setProperty('--tc-rgb', m.rgb);
+  c.innerHTML = '<span class="cc-top"><b>' + m.tab + '</b><span>' + m.en + '</span></span>' +
+    '<strong>' + m.name + '</strong><small>' + m.blurb + '</small>';
+  c.addEventListener('click', () => activate(i));
+  catalogEl.appendChild(c);
+});
+
+function plainFormula(html) {
+  return html.replace(/<br\s*\/?>/gi, ' ').replace(/<[^>]+>/g, '').replace(/\s+/g, ' ').trim();
+}
+function buildPanel() {
+  const m = cur.meta();
+  $('#title').textContent = m.title;
+  $('#desc').innerHTML = m.desc;
+  $('#formula').innerHTML = m.formula;
+  $('#note').innerHTML = m.note;
+  $('#stageFormula').textContent = plainFormula(m.formula);
+  $('#eqTag').textContent = cur.tab;
+  controlsEl.innerHTML = '';
+  cur.panel(controlsEl);
+}
+const decodeBox = document.createElement('div');
+function plainText(html) {
+  decodeBox.innerHTML = html;
+  return decodeBox.textContent;
+}
+function renderHud() {
+  if (!cur) return;
+  const rows = cur.hud();
+  hudEl.innerHTML = rows.map(r =>
+    '<div class="hud-item' + (r.hi ? ' hi' : '') + '"><span>' + r.k + '</span><b>' + r.v + '</b></div>'
+  ).join('');
+  $('#stageValues').textContent = rows.slice(0, 4).map(r => plainText(r.k + ' ' + r.v)).join('   ·   ');
+}
+function syncPlayBtn() {
+  const play = $('#playBtn');
+  if (!cur) { play.hidden = true; return; }
+  const ok = cur.playable || typeof cur.togglePlay === 'function';
+  play.hidden = !ok;
+  if (!ok) return;
+  let txt = '▶ 播放';
+  if (typeof cur.playLabel === 'function') txt = cur.playLabel();
+  else if (cur.state && cur.state.playing) txt = '⏸ 暂停';
+  if (play.textContent !== txt) play.textContent = txt;
+}
+function activate(i) {
+  curIdx = i;
+  cur = MODULES[i];
+  root.style.setProperty('--accent', cur.accent);
+  root.style.setProperty('--accent-rgb', cur.rgb);
+  for (let j = 0; j < chapterListEl.children.length; j++) {
+    chapterListEl.children[j].classList.toggle('on', j === i);
+    catalogEl.children[j].classList.toggle('on', j === i);
+  }
+  cur.reset();
+  hoverId = null;
+  dragId = null;
+  orbitId = null;
+  orbitLast = null;
+  buildPanel();
+  const m = cur.meta();
+  $('#liveName').textContent = cur.name;
+  $('#liveIndex').textContent = cur.tab;
+  $('#defMark').textContent = cur.tab;
+  $('#topChip').innerHTML = '<span class="chip-dot"></span>第 ' + (i + 1) + ' / ' + MODULES.length + ' 节';
+  $('#hint').textContent = cur.hint + ' · ← → 切换';
+  syncPlayBtn();
+  renderHud();
+  cv.style.cursor = canOrbit() ? 'grab' : 'default';
+}
+
+function resize() {
+  const r = $('.stage-card').getBoundingClientRect();
+  if (r.width < 2 || r.height < 2) return;
+  W = r.width;
+  H = r.height;
+  DPR = Math.min(2, window.devicePixelRatio || 1);
+  cv.width = Math.round(W * DPR);
+  cv.height = Math.round(H * DPR);
+  ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
+}
+
+let last = performance.now(), lastHud = 0;
+function loop(now) {
+  const dt = Math.min(.05, (now - last) / 1000 || 0);
+  last = now;
+  if (cur && W > 0) {
+    ctx.clearRect(0, 0, W, H);
+    cur.draw(dt);
+    if (now - lastHud > 120) {
+      lastHud = now;
+      renderHud();
+      syncPlayBtn();
+    }
+  }
+  requestAnimationFrame(loop);
+}
+
+/* ---------- 指针交互 ---------- */
+function pointAt(e) {
+  const r = cv.getBoundingClientRect();
+  const sx = (e.clientX - r.left) * (W / r.width);
+  const sy = (e.clientY - r.top) * (H / r.height);
+  return {sx, sy, wx: (sx - V.ox) / V.k, wy: (V.oy - sy) / V.k};
+}
+function pick(e) {
+  if (!cur) return null;
+  const p = pointAt(e);
+  const hs = cur.handles() || [];
+  let best = null, bd = 22;
+  for (const h of hs) {
+    const d = Math.hypot(X(h.x) - p.sx, Y(h.y) - p.sy);
+    if (d < bd) { bd = d; best = h.id; }
+  }
+  return best;
+}
+function canOrbit() {
+  return !!(cur && typeof cur.orbit === 'function' && (!cur.orbitEnabled || cur.orbitEnabled()));
+}
+cv.addEventListener('pointerdown', e => {
+  if (!cur) return;
+  const id = pick(e);
+  if (id) {
+    dragId = id;
+    hoverId = id;
+    cv.setPointerCapture(e.pointerId);
+    cv.style.cursor = 'grabbing';
+    e.preventDefault();
+  } else if (canOrbit()) {
+    orbitId = e.pointerId;
+    orbitLast = {x: e.clientX, y: e.clientY};
+    cv.setPointerCapture(e.pointerId);
+    cv.style.cursor = 'grabbing';
+    e.preventDefault();
+  }
+});
+cv.addEventListener('pointermove', e => {
+  if (!cur) return;
+  if (dragId) {
+    const p = pointAt(e);
+    cur.drag(dragId, {x: p.wx, y: p.wy});
+    renderHud();
+  } else if (orbitId !== null) {
+    if (!canOrbit()) return;
+    const dx = e.clientX - orbitLast.x;
+    const dy = e.clientY - orbitLast.y;
+    orbitLast = {x: e.clientX, y: e.clientY};
+    cur.orbit(dx, dy);
+    renderHud();
+  } else {
+    const id = pick(e);
+    hoverId = id;
+    cv.style.cursor = (id || canOrbit()) ? 'grab' : 'default';
+  }
+});
+function endDrag() {
+  dragId = null;
+  orbitId = null;
+  orbitLast = null;
+  cv.style.cursor = canOrbit() ? 'grab' : 'default';
+}
+cv.addEventListener('pointerup', endDrag);
+cv.addEventListener('pointercancel', endDrag);
+cv.addEventListener('pointerleave', () => {
+  if (dragId || orbitId !== null) return;
+  hoverId = null;
+  cv.style.cursor = canOrbit() ? 'grab' : 'default';
+});
+
+/* ---------- 顶部操作 ---------- */
+$('#resetBtn').addEventListener('click', () => {
+  if (!cur) return;
+  cur.reset();
+  buildPanel();
+  renderHud();
+});
+$('#playBtn').addEventListener('click', () => { if (cur && cur.togglePlay) cur.togglePlay(); });
+$('#fullBtn').addEventListener('click', () => {
+  if (!document.fullscreenElement) {
+    if (root.requestFullscreen) root.requestFullscreen();
+  } else if (document.exitFullscreen) {
+    document.exitFullscreen();
+  }
+});
+
+/* ---------- 键盘 ---------- */
+window.addEventListener('keydown', e => {
+  if (e.target && /INPUT|TEXTAREA|SELECT/.test(e.target.tagName)) return;
+  if (e.key === 'ArrowRight') {
+    e.preventDefault();
+    activate((curIdx + 1) % MODULES.length);
+  } else if (e.key === 'ArrowLeft') {
+    e.preventDefault();
+    activate((curIdx - 1 + MODULES.length) % MODULES.length);
+  } else if (e.code === 'Space') {
+    e.preventDefault();
+    if (cur && cur.togglePlay) cur.togglePlay();
+  }
+});
+
+if (window.ResizeObserver) new ResizeObserver(resize).observe($('.stage-card'));
+window.addEventListener('resize', resize);
+
+resize();
+activate(0);
+requestAnimationFrame(loop);
+</script>
+</body>
+</html>
